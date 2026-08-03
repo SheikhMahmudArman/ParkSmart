@@ -1,0 +1,13 @@
+/* Notifications */
+.notification-item {
+    border-bottom: 1px solid #2a2a2a;
+    padding: 0.8rem 0;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-item .icon {
+    font-size: 1.5rem;
+}

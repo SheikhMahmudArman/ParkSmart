@@ -1,117 +1,240 @@
-/* Sidebar */
+/* ===== ENHANCED THEME ===== */
+body {
+    background: #0d0d0d;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Sidebar – refined */
 .sidebar {
-    background: #1a1a1a;
-    border-right: 1px solid #2c2c2c;
-    height: 100vh;
-    position: sticky;
-    top: 0;
-    padding: 1.5rem 1rem;
+    background: #141414;
+    border-right: 1px solid #2a2a2a;
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.4);
 }
 
 .sidebar .nav-link {
     color: #b0b0b0;
-    border-radius: 8px;
-    padding: 0.6rem 1rem;
-    margin-bottom: 4px;
-    transition: all 0.2s;
+    border-radius: 10px;
+    padding: 0.65rem 1rem;
+    margin-bottom: 2px;
+    transition: all 0.2s ease;
+    font-weight: 500;
 }
 
 .sidebar .nav-link:hover {
-    background: #2c2c2c;
+    background: #2a2a2a;
     color: #fff;
+    transform: translateX(4px);
 }
 
 .sidebar .nav-link.active {
-    background: #2c2c2c;
+    background: #2a2a2a;
     color: #fff;
-    box-shadow: inset 3px 0 0 #0d6efd;
+    box-shadow: inset 3px 0 0 #0d6efd, 0 2px 8px rgba(13, 110, 253, 0.2);
 }
 
 .sidebar .brand {
     font-weight: 700;
-    font-size: 1.4rem;
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
     padding-bottom: 1.5rem;
-    border-bottom: 1px solid #2c2c2c;
+    border-bottom: 1px solid #2a2a2a;
     margin-bottom: 1.5rem;
     color: #fff;
 }
 
 .sidebar .brand i {
-    color: #0d6efd;
+    background: linear-gradient(135deg, #0d6efd, #6f42c1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 /* Top bar */
 .topbar {
-    background: #1a1a1a;
-    border-bottom: 1px solid #2c2c2c;
-    padding: 0.75rem 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    background: #141414;
+    border-bottom: 1px solid #2a2a2a;
+    padding: 0.75rem 2rem;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* Cards */
+/* Cards – elevated */
 .card {
-    border-radius: 12px;
+    background: #1a1a1a !important;
+    border: 1px solid #2a2a2a !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3) !important;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
 }
 
 .card-header {
-    background: #252525;
-    border-bottom: 1px solid #2c2c2c;
+    background: #222 !important;
+    border-bottom: 1px solid #2a2a2a !important;
+    font-weight: 600;
+    color: #e0e0e0;
+    padding: 1rem 1.5rem;
+    border-radius: 16px 16px 0 0 !important;
 }
 
+/* Stat cards – modern */
 .stat-card {
-    background: #1e1e1e;
-    border: 1px solid #2c2c2c;
-    border-radius: 12px;
-    padding: 1.2rem 1.5rem;
-    transition: transform 0.2s;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
 }
 
 .stat-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+    border-color: #3a3a3a;
 }
 
 .stat-card .icon {
-    font-size: 2rem;
+    font-size: 2.2rem;
     color: #0d6efd;
 }
 
 .stat-card .value {
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: 700;
     color: #fff;
+    letter-spacing: -0.5px;
 }
 
 .stat-card .label {
     color: #aaa;
     font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
-/* Buttons */
+/* Buttons – refined */
+.btn {
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 0.6rem 1.5rem;
+    transition: all 0.2s ease;
+}
+
 .btn-primary {
-    background-color: #0d6efd;
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
     border: none;
 }
 
 .btn-primary:hover {
-    background-color: #0b5ed7;
+    background: linear-gradient(135deg, #0b5ed7, #0a58ca);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(13, 110, 253, 0.3);
 }
 
 .btn-success {
-    background-color: #198754;
+    background: linear-gradient(135deg, #198754, #157347);
     border: none;
 }
 
 .btn-success:hover {
-    background-color: #157347;
+    background: linear-gradient(135deg, #157347, #146c43);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(25, 135, 84, 0.3);
 }
 
 .btn-danger {
-    background-color: #dc3545;
+    background: linear-gradient(135deg, #dc3545, #bb2d3b);
     border: none;
 }
 
 .btn-danger:hover {
-    background-color: #bb2d3b;
+    background: linear-gradient(135deg, #bb2d3b, #a52834);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3);
+}
+
+.btn-outline-secondary {
+    color: #ccc;
+    border-color: #444;
+}
+
+.btn-outline-secondary:hover {
+    background: #2a2a2a;
+    color: #fff;
+    border-color: #666;
+}
+
+/* Forms – dark & sleek */
+.form-control,
+.form-select {
+    background: #222 !important;
+    border: 1px solid #333 !important;
+    border-radius: 10px !important;
+    padding: 0.7rem 1rem !important;
+    color: #e0e0e0 !important;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15) !important;
+}
+
+.form-label {
+    color: #ccc;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+/* Tables – clean */
+.table {
+    --bs-table-bg: transparent;
+    color: #ddd;
+}
+
+.table th {
+    color: #aaa;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    border-bottom: 2px solid #2a2a2a;
+}
+
+.table td {
+    border-bottom: 1px solid #2a2a2a;
+    padding: 0.8rem 1rem;
+}
+
+.table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Badges – soft */
+.badge {
+    font-weight: 500;
+    padding: 0.35rem 0.8rem;
+    border-radius: 20px;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeInUp 0.4s ease forwards;
 }

@@ -1,0 +1,5 @@
+/* My Reservations */
+.reservation-table .status-badge,
+.reservation-table .payment-badge {
+    font-size: 0.8rem;
+}
