@@ -1,0 +1,117 @@
+/* Sidebar */
+.sidebar {
+    background: #1a1a1a;
+    border-right: 1px solid #2c2c2c;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    padding: 1.5rem 1rem;
+}
+
+.sidebar .nav-link {
+    color: #b0b0b0;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    margin-bottom: 4px;
+    transition: all 0.2s;
+}
+
+.sidebar .nav-link:hover {
+    background: #2c2c2c;
+    color: #fff;
+}
+
+.sidebar .nav-link.active {
+    background: #2c2c2c;
+    color: #fff;
+    box-shadow: inset 3px 0 0 #0d6efd;
+}
+
+.sidebar .brand {
+    font-weight: 700;
+    font-size: 1.4rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #2c2c2c;
+    margin-bottom: 1.5rem;
+    color: #fff;
+}
+
+.sidebar .brand i {
+    color: #0d6efd;
+}
+
+/* Top bar */
+.topbar {
+    background: #1a1a1a;
+    border-bottom: 1px solid #2c2c2c;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Cards */
+.card {
+    border-radius: 12px;
+}
+
+.card-header {
+    background: #252525;
+    border-bottom: 1px solid #2c2c2c;
+}
+
+.stat-card {
+    background: #1e1e1e;
+    border: 1px solid #2c2c2c;
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-card .icon {
+    font-size: 2rem;
+    color: #0d6efd;
+}
+
+.stat-card .value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.stat-card .label {
+    color: #aaa;
+    font-size: 0.85rem;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #0d6efd;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+}
+
+.btn-success {
+    background-color: #198754;
+    border: none;
+}
+
+.btn-success:hover {
+    background-color: #157347;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #bb2d3b;
+}
