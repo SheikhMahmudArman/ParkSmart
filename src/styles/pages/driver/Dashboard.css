@@ -1,0 +1,7 @@
+.dashboard-stats .stat-card {
+    transition: transform 0.2s;
+}
+
+.dashboard-stats .stat-card:hover {
+    transform: translateY(-4px);
+}

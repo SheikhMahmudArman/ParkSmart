@@ -1,0 +1,7 @@
+.staff-dashboard .stat-card {
+    transition: all 0.3s;
+}
+
+.staff-dashboard .stat-card:hover {
+    transform: translateY(-6px);
+}

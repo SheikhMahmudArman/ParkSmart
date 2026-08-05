@@ -1,0 +1,7 @@
+.admin-dashboard .stat-card {
+    transition: all 0.3s;
+}
+
+.admin-dashboard .stat-card:hover {
+    transform: translateY(-6px);
+}

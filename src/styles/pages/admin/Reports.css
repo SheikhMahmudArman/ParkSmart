@@ -1,0 +1,18 @@
+.admin-reports .report-card {
+    transition: transform 0.2s;
+}
+
+.admin-reports .report-card:hover {
+    transform: translateY(-4px);
+}
+
+.admin-reports .revenue-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.admin-reports .revenue-item:last-child {
+    border-bottom: none;
+}
