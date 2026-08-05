@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
+import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Layout from './components/Layout';
 
@@ -32,10 +33,18 @@ import AdminReports from './pages/admin/Reports';
 function App() {
   const { user } = useAuth();
 
+  // Not logged in – public routes
   if (!user) {
-    return <Login />;
+    return (
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    );
   }
 
+  // Logged in – role-based routing
   const role = user.role;
 
   if (role === 'driver') {

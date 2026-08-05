@@ -37,7 +37,7 @@ const Login = () => {
     };
 
     return (
-        <div className="d-flex justify-content-center align-items-center vh-100" style={{ background: '#121212' }}>
+        <div className="login-page d-flex justify-content-center align-items-center vh-100" style={{ background: '#121212' }}>
             <div className="card p-4" style={{ maxWidth: '400px', width: '100%' }}>
                 <div className="text-center mb-4">
                     <h2 className="text-white"><i className="bi bi-p-circle me-2 text-primary"></i>ParkManager</h2>
