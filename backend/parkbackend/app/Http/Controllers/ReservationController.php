@@ -106,4 +106,24 @@ class ReservationController extends Controller
             'message' => 'Reservation deleted successfully'
         ], 200);
     }
+    // GET /api/users/{id}/reservations - Get all reservations for a specific user
+public function userReservations($userId)
+{
+    $reservations = Reservation::with([
+        'user',
+        'vehicle',
+        'parkingSpace'
+    ])->where('user_id', $userId)->get();
+
+    if ($reservations->isEmpty()) {
+        return response()->json([
+            'message' => 'No reservations found for this user'
+        ], 404);
+    }
+
+    return response()->json([
+        'message' => 'User reservations retrieved successfully',
+        'reservations' => $reservations
+    ], 200);
+}
 }

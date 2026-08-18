@@ -29,7 +29,7 @@ import AdminSpots from './pages/admin/Spots';
 import AdminStaff from './pages/admin/Staff';
 import AdminPayments from './pages/admin/Payments';
 import AdminReports from './pages/admin/Reports';
-
+import Register from './pages/Register';
 function App() {
   const { user } = useAuth();
 
@@ -40,6 +40,7 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="*" element={<Navigate to="/" />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     );
   }
@@ -51,6 +52,7 @@ function App() {
     return (
       <Layout role="driver">
         <Routes>
+
           <Route path="/" element={<Navigate to="/driver/dashboard" />} />
           <Route path="/driver/dashboard" element={<DriverDashboard />} />
           <Route path="/driver/search" element={<SearchParking />} />
@@ -70,6 +72,7 @@ function App() {
     return (
       <Layout role="staff">
         <Routes>
+
           <Route path="/" element={<Navigate to="/staff/dashboard" />} />
           <Route path="/staff/dashboard" element={<StaffDashboard />} />
           <Route path="/staff/reservations" element={<StaffReservations />} />
@@ -86,6 +89,7 @@ function App() {
     return (
       <Layout role="admin">
         <Routes>
+          <Route path="/register" element={<Register />} />
           <Route path="/" element={<Navigate to="/admin/dashboard" />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<AdminUsers />} />

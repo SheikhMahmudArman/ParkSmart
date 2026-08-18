@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('parking_sessions', function (Blueprint $table) {
             $table->id('SessionID');
-            $table->foreignId('ReservationID')->constrained('reservations', 'ReservationID')->cascadeOnDelete();
-            $table->foreignId('VehicleID')->constrained('vehicles', 'VehicleID')->cascadeOnDelete();
-            $table->foreignId('SpaceID')->constrained('parking_spaces', 'SpaceID')->cascadeOnDelete();
+            $table->foreignId('ReservationID')->constrained('reservations', 'id')->cascadeOnDelete();
+            $table->foreignId('VehicleID')->constrained('vehicles', 'id')->cascadeOnDelete();
+            $table->foreignId('SpaceID')->constrained('parking_spaces', 'id')->cascadeOnDelete();
             $table->dateTime('EntryTime');
             $table->dateTime('ExitTime')->nullable();
             $table->integer('DurationMinutes')->nullable();

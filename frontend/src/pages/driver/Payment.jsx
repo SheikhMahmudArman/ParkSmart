@@ -1,32 +1,55 @@
+import { useState, useEffect } from 'react';
 import { Card } from 'react-bootstrap';
-import '../../styles/pages/driver/Payment.css';
-
-const payments = [
-    { id: 1, date: '2026-08-04', lot: 'Downtown Plaza', amount: 10.00, status: 'Completed', method: 'Credit Card' },
-    { id: 2, date: '2026-08-03', lot: 'Airport Terminal', amount: 24.00, status: 'Completed', method: 'PayPal' },
-    { id: 3, date: '2026-08-02', lot: 'Mall Square', amount: 6.00, status: 'Completed', method: 'Debit Card' },
-];
+import { useAuth } from '../../context/AuthContext';
 
 const Payment = () => {
+    const { user } = useAuth();
+    const [payments, setPayments] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetch(`http://localhost:8000/api/users/${user.id}/payments`, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`,
+                'Accept': 'application/json'
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                setPayments(data);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error('Error fetching payments:', err);
+                setLoading(false);
+            });
+    }, [user.id, user.token]);
+
+    if (loading) return <div className="text-center mt-5">Loading payment history...</div>;
+
     return (
         <div className="fade-in">
             <Card>
                 <Card.Body>
-                    <div className="table-wrap payment-table">
+                    <div className="table-wrap">
                         <table className="table">
                             <thead>
                                 <tr><th>Date</th><th>Lot</th><th>Amount</th><th>Status</th><th>Method</th></tr>
                             </thead>
                             <tbody>
-                                {payments.map((p) => (
-                                    <tr key={p.id}>
-                                        <td>{p.date}</td>
-                                        <td>{p.lot}</td>
-                                        <td className="amount">${p.amount.toFixed(2)}</td>
-                                        <td><span className={`badge bg-${p.status === 'Completed' ? 'success' : 'warning'}`}>{p.status}</span></td>
-                                        <td>{p.method}</td>
-                                    </tr>
-                                ))}
+                                {payments.length === 0 ? (
+                                    <tr><td colSpan="5" className="text-center text-secondary">No payments found</td></tr>
+                                ) : (
+                                    payments.map((p) => (
+                                        <tr key={p.PaymentID}>
+                                            <td>{new Date(p.PaymentDate).toLocaleDateString()}</td>
+                                            <td>{p.lot_name || 'N/A'}</td>
+                                            <td>${p.Amount.toFixed(2)}</td>
+                                            <td><span className={`badge bg-${p.Status === 'Completed' ? 'success' : 'warning'}`}>{p.Status}</span></td>
+                                            <td>{p.Method}</td>
+                                        </tr>
+                                    ))
+                                )}
                             </tbody>
                         </table>
                     </div>

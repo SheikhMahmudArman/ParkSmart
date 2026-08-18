@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id('PaymentID');
-            $table->foreignId('ReservationID')->constrained('reservations', 'ReservationID')->cascadeOnDelete();
-            $table->foreignId('SessionID')->nullable()->constrained('parking_sessions', 'SessionID')->nullOnDelete();
+            $table->foreignId('ReservationID')->constrained('reservations', 'id')->cascadeOnDelete();
+            $table->foreignId('SessionID')->nullable()->constrained('parking_sessions', 'id')->nullOnDelete();
             $table->decimal('Amount', 10, 2);
             $table->dateTime('PaymentDate')->useCurrent();
             $table->enum('Method', ['Credit Card', 'Debit Card', 'PayPal', 'Cash', 'Mobile Wallet']);
