@@ -40,12 +40,22 @@ const Login = () => {
             login(userData);
 
             // Redirect based on role
-            const redirectMap = {
-                driver: '/driver/dashboard',
-                staff: '/staff/dashboard',
-                admin: '/admin/dashboard'
-            };
-            navigate(redirectMap[data.user.role] || '/');
+           switch (data.user.role) {
+                case 'driver':
+                    navigate('/driver/dashboard');
+                    break;
+
+                case 'staff':
+                    navigate('/staff/dashboard');
+                    break;
+
+                case 'admin':
+                    navigate('/admin/dashboard');
+                    break;
+
+                default:
+                    setError('Invalid user role');
+            }
         } catch (err) {
             setError(err.message);
         } finally {
@@ -53,26 +63,12 @@ const Login = () => {
         }
     };
 
-    // Demo quick-fill buttons (still useful for testing)
-    const fillDemo = (role) => {
-        const demos = {
-            driver: { email: 'driver@parking.com', password: '123456' },
-            staff: { email: 'staff@parking.com', password: '123456' },
-            admin: { email: 'admin@parking.com', password: '123456' }
-        };
-        setEmail(demos[role].email);
-        setPassword(demos[role].password);
-    };
+   
 
     return (
         <div className="d-flex justify-content-center align-items-center vh-100" style={{ background: '#121212' }}>
             <div className="card p-4" style={{ maxWidth: '400px', width: '100%' }}>
                 <h2 className="text-center">Login</h2>
-                <div className="d-flex gap-2 mb-3">
-                    <button className="btn btn-outline-secondary flex-fill" onClick={() => fillDemo('driver')}>Driver</button>
-                    <button className="btn btn-outline-secondary flex-fill" onClick={() => fillDemo('staff')}>Staff</button>
-                    <button className="btn btn-outline-secondary flex-fill" onClick={() => fillDemo('admin')}>Admin</button>
-                </div>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
                         <label>Email</label>

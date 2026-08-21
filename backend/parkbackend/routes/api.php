@@ -8,7 +8,13 @@ use App\Http\Controllers\ParkingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LotController;
 
+
 // ==================== PUBLIC ROUTES ====================
+Route::post('/test-register', function () {
+    return response()->json([
+        'message' => 'API is working'
+    ]);
+});
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
