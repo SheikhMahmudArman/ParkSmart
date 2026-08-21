@@ -10,12 +10,21 @@ class ParkingLot extends Model
     use HasFactory;
 
     protected $fillable = [
-        'lot_name',
+        'name',
         'location',
+        'total_spaces',
+        'available_spaces',
+        'hourly_rate',
+        'type',
+        'features'
+    ];
+
+    protected $casts = [
+        'features' => 'array'
     ];
 
     public function parkingSpaces()
     {
-        return $this->hasMany(ParkingSpace::class);
+        return $this->hasMany(ParkingSpace::class, 'parking_lot_id');
     }
 }

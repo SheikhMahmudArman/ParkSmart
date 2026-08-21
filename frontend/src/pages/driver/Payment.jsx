@@ -41,12 +41,12 @@ const Payment = () => {
                                     <tr><td colSpan="5" className="text-center text-secondary">No payments found</td></tr>
                                 ) : (
                                     payments.map((p) => (
-                                        <tr key={p.PaymentID}>
-                                            <td>{new Date(p.PaymentDate).toLocaleDateString()}</td>
-                                            <td>{p.lot_name || 'N/A'}</td>
-                                            <td>${p.Amount.toFixed(2)}</td>
-                                            <td><span className={`badge bg-${p.Status === 'Completed' ? 'success' : 'warning'}`}>{p.Status}</span></td>
-                                            <td>{p.Method}</td>
+                                        <tr key={p.id || p.PaymentID}>
+                                            <td>{new Date(p.date || p.PaymentDate).toLocaleDateString()}</td>
+                                            <td>{p.lot || p.lot_name || 'N/A'}</td>
+                                            <td>${(p.amount || p.Amount).toFixed(2)}</td>
+                                            <td><span className={`badge bg-${(p.status || p.Status) === 'Completed' ? 'success' : 'warning'}`}>{p.status || p.Status}</span></td>
+                                            <td>{p.method || p.Method}</td>
                                         </tr>
                                     ))
                                 )}

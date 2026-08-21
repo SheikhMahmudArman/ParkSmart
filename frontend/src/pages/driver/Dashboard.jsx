@@ -7,13 +7,15 @@ const DriverDashboard = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Fetch user's reservations (assuming endpoint exists)
         fetch(`http://localhost:8000/api/users/${user.id}/reservations`, {
-            headers: { 'Authorization': `Bearer ${user.token}` }
+            headers: { 
+                'Authorization': `Bearer ${user.token}`,
+                'Accept': 'application/json'
+            }
         })
             .then(res => res.json())
             .then(data => {
-                setReservations(data);
+                setReservations(data.reservations || []);
                 setLoading(false);
             })
             .catch(err => {
@@ -27,7 +29,15 @@ const DriverDashboard = () => {
     return (
         <div>
             <h2>Dashboard</h2>
-            {/* render reservations */}
+            {reservations.length === 0 ? (
+                <p>No reservations found.</p>
+            ) : (
+                <ul>
+                    {reservations.map(r => (
+                        <li key={r.id}>{r.parking_space?.lot?.name} - {r.status}</li>
+                    ))}
+                </ul>
+            )}
         </div>
     );
 };

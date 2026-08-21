@@ -28,14 +28,12 @@ const StaffDashboard = () => {
                 return res.json();
             })
             .then(data => {
-                // Ensure data is an array
                 const sessionsArray = Array.isArray(data) ? data : [];
                 setSessions(sessionsArray);
 
-                // Calculate stats
                 const total = sessionsArray.length;
-                const active = sessionsArray.filter(s => s.ExitTime === null).length;
-                const exited = sessionsArray.filter(s => s.ExitTime !== null).length;
+                const active = sessionsArray.filter(s => s.ExitTime === null || s.exit_time === null).length;
+                const exited = sessionsArray.filter(s => s.ExitTime !== null || s.exit_time !== null).length;
 
                 setStats({
                     totalEntries: total,
@@ -90,12 +88,12 @@ const StaffDashboard = () => {
                                 </thead>
                                 <tbody>
                                     {sessions.map((s) => (
-                                        <tr key={s.SessionID}>
-                                            <td>{s.vehicle?.PlateNumber || 'N/A'}</td>
-                                            <td>{s.parkingSpace?.parkingLot?.Name || 'N/A'}</td>
-                                            <td>{s.parkingSpace?.SpaceNumber || 'N/A'}</td>
-                                            <td>{new Date(s.EntryTime).toLocaleTimeString()}</td>
-                                            <td>{Math.floor((Date.now() - new Date(s.EntryTime)) / 60000)} min</td>
+                                        <tr key={s.id || s.SessionID}>
+                                            <td>{s.vehicle?.PlateNumber || s.plate_number || 'N/A'}</td>
+                                            <td>{s.parkingSpace?.parkingLot?.Name || s.lot_name || 'N/A'}</td>
+                                            <td>{s.parkingSpace?.SpaceNumber || s.space_number || 'N/A'}</td>
+                                            <td>{new Date(s.EntryTime || s.entry_time).toLocaleTimeString()}</td>
+                                            <td>{Math.floor((Date.now() - new Date(s.EntryTime || s.entry_time)) / 60000)} min</td>
                                         </tr>
                                     ))}
                                 </tbody>

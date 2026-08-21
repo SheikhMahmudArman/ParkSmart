@@ -1,70 +1,164 @@
-import { useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Form, Button, Row, Col } from 'react-bootstrap';
-import { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import '../../styles/pages/driver/ReserveSpot.css';
-
-const PARKING_LOTS = [
-    { id: 1, name: 'Downtown Plaza', location: '123 Main St, NYC', price: 5, total: 100, available: 42, type: 'Standard', features: ['EV Charging', 'Covered'] },
-    { id: 2, name: 'Mall Square', location: '456 Mall Ave, LA', price: 3, total: 200, available: 87, type: 'Standard', features: ['Open 24/7', 'Security'] },
-    { id: 3, name: 'Airport Terminal', location: '789 Airport Rd, SF', price: 8, total: 150, available: 23, type: 'Premium', features: ['EV Charging', 'Valet', 'Covered'] },
-    { id: 4, name: 'City Center', location: '321 Center Blvd, CHI', price: 6, total: 80, available: 15, type: 'Standard', features: ['Disabled Access'] },
-    { id: 5, name: 'Harbor View', location: '555 Bay St, SEA', price: 4, total: 120, available: 61, type: 'Standard', features: ['Covered', 'Security'] },
-];
 
 const ReserveSpot = () => {
     const { id } = useParams();
-    const lot = PARKING_LOTS.find(l => l.id === parseInt(id)) || PARKING_LOTS[0];
-    const [date, setDate] = useState('2026-08-10');
-    const [start, setStart] = useState('10:00');
-    const [end, setEnd] = useState('12:00');
+    const navigate = useNavigate();
+    const { user } = useAuth();
+    const [lot, setLot] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [formData, setFormData] = useState({
+        date: new Date().toISOString().split('T')[0],
+        start_time: '10:00',
+        end_time: '12:00',
+        vehicle_id: ''
+    });
+    const [vehicles, setVehicles] = useState([]);
 
-    const handleReserve = () => {
-        alert(`✅ Reservation confirmed!\n\nLot: ${lot.name}\nDate: ${date}\nTime: ${start} - ${end}\nSpot: A12 (assigned)`);
-        window.location.hash = '#/driver/reservations';
+    useEffect(() => {
+        // Fetch lot details
+        fetch(`http://localhost:8000/api/lots/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`,
+                'Accept': 'application/json'
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                setLot(data);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error('Error fetching lot:', err);
+                // Fallback
+                setLot({
+                    id: 1,
+                    name: 'Downtown Plaza',
+                    location: '123 Main St, NYC',
+                    hourly_rate: 5,
+                    total_spots: 100,
+                    available_spots: 42,
+                    type: 'Standard'
+                });
+                setLoading(false);
+            });
+
+        // Fetch user's vehicles
+        fetch(`http://localhost:8000/api/users/${user.id}/vehicles`, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`,
+                'Accept': 'application/json'
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                setVehicles(data || []);
+            })
+            .catch(err => {
+                console.error('Error fetching vehicles:', err);
+                setVehicles([
+                    { id: 1, make: 'Toyota', model: 'Camry', plate_number: 'ABC-123' }
+                ]);
+            });
+    }, [id, user.id, user.token]);
+
+    const handleReserve = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch('http://localhost:8000/api/reservations', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${user.token}`,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    lot_id: lot.id,
+                    vehicle_id: formData.vehicle_id,
+                    reservation_date: formData.date,
+                    start_time: formData.start_time,
+                    end_time: formData.end_time
+                })
+            });
+            if (!response.ok) throw new Error('Failed to create reservation');
+            const data = await response.json();
+            alert(`✅ Reservation confirmed!\n\nLot: ${lot.name}\nDate: ${formData.date}\nTime: ${formData.start_time} - ${formData.end_time}\nSpot: ${data.spot_number || 'Assigned'}`);
+            navigate('/driver/reservations');
+        } catch (error) {
+            console.error('Error creating reservation:', error);
+            alert('Failed to create reservation. Please try again.');
+        }
     };
+
+    if (loading) return <div className="text-center mt-5">Loading...</div>;
 
     return (
         <div className="fade-in">
             <Card className="reserve-card">
                 <Card.Body>
                     <h5 className="mb-3">Reserve a Spot</h5>
-                    <Form>
+                    <Form onSubmit={handleReserve}>
                         <Form.Group className="mb-3">
                             <Form.Label>Parking Lot</Form.Label>
                             <Form.Control type="text" value={lot.name} disabled />
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>Date</Form.Label>
-                            <Form.Control type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+                            <Form.Control 
+                                type="date" 
+                                value={formData.date} 
+                                onChange={(e) => setFormData({...formData, date: e.target.value})}
+                                required
+                            />
                         </Form.Group>
                         <Row>
                             <Col>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Start Time</Form.Label>
-                                    <Form.Control type="time" value={start} onChange={(e) => setStart(e.target.value)} />
+                                    <Form.Control 
+                                        type="time" 
+                                        value={formData.start_time} 
+                                        onChange={(e) => setFormData({...formData, start_time: e.target.value})}
+                                        required
+                                    />
                                 </Form.Group>
                             </Col>
                             <Col>
                                 <Form.Group className="mb-3">
                                     <Form.Label>End Time</Form.Label>
-                                    <Form.Control type="time" value={end} onChange={(e) => setEnd(e.target.value)} />
+                                    <Form.Control 
+                                        type="time" 
+                                        value={formData.end_time} 
+                                        onChange={(e) => setFormData({...formData, end_time: e.target.value})}
+                                        required
+                                    />
                                 </Form.Group>
                             </Col>
                         </Row>
                         <Form.Group className="mb-3">
                             <Form.Label>Vehicle</Form.Label>
-                            <Form.Select>
-                                <option>Toyota Camry (ABC-123)</option>
-                                <option>Honda Civic (XYZ-789)</option>
-                                <option>Tesla Model 3 (EV-001)</option>
+                            <Form.Select 
+                                value={formData.vehicle_id} 
+                                onChange={(e) => setFormData({...formData, vehicle_id: e.target.value})}
+                                required
+                            >
+                                <option value="">Select a vehicle...</option>
+                                {vehicles.map((v) => (
+                                    <option key={v.id} value={v.id}>
+                                        {v.make} {v.model} ({v.plate_number})
+                                    </option>
+                                ))}
                             </Form.Select>
                         </Form.Group>
                         <div className="price-estimate mb-3">
                             <small className="text-secondary">
-                                <i className="bi bi-info-circle me-1"></i> Price estimate: <strong>${lot.price * 2}.00</strong> (2 hours)
+                                <i className="bi bi-info-circle me-1"></i> Price estimate: <strong>${lot.hourly_rate * 2}.00</strong> (2 hours)
                             </small>
                         </div>
-                        <Button variant="success" onClick={handleReserve}>
+                        <Button variant="success" type="submit">
                             <i className="bi bi-check-circle me-1"></i>Confirm Reservation
                         </Button>
                     </Form>

@@ -10,8 +10,11 @@ class Vehicle extends Model
     use HasFactory;
 
     protected $fillable = [
-        'plate_number',
         'user_id',
+        'plate_number',
+        'make',
+        'model',
+        'color'
     ];
 
     public function user()
@@ -22,5 +25,10 @@ class Vehicle extends Model
     public function reservations()
     {
         return $this->hasMany(Reservation::class);
+    }
+
+    public function parkingSessions()
+    {
+        return $this->hasMany(ParkingSession::class, 'vehicle_id');
     }
 }

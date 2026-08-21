@@ -1,18 +1,46 @@
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, Button } from 'react-bootstrap';
+import { useAuth } from '../../context/AuthContext';
 import '../../styles/pages/driver/ParkingDetails.css';
-
-const PARKING_LOTS = [
-    { id: 1, name: 'Downtown Plaza', location: '123 Main St, NYC', price: 5, total: 100, available: 42, type: 'Standard', features: ['EV Charging', 'Covered'] },
-    { id: 2, name: 'Mall Square', location: '456 Mall Ave, LA', price: 3, total: 200, available: 87, type: 'Standard', features: ['Open 24/7', 'Security'] },
-    { id: 3, name: 'Airport Terminal', location: '789 Airport Rd, SF', price: 8, total: 150, available: 23, type: 'Premium', features: ['EV Charging', 'Valet', 'Covered'] },
-    { id: 4, name: 'City Center', location: '321 Center Blvd, CHI', price: 6, total: 80, available: 15, type: 'Standard', features: ['Disabled Access'] },
-    { id: 5, name: 'Harbor View', location: '555 Bay St, SEA', price: 4, total: 120, available: 61, type: 'Standard', features: ['Covered', 'Security'] },
-];
 
 const ParkingDetails = () => {
     const { id } = useParams();
-    const lot = PARKING_LOTS.find(l => l.id === parseInt(id)) || PARKING_LOTS[0];
+    const { user } = useAuth();
+    const [lot, setLot] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetch(`http://localhost:8000/api/lots/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`,
+                'Accept': 'application/json'
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                setLot(data);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error('Error fetching lot details:', err);
+                // Fallback data
+                setLot({
+                    id: 1,
+                    name: 'Downtown Plaza',
+                    location: '123 Main St, NYC',
+                    hourly_rate: 5,
+                    total_spots: 100,
+                    available_spots: 42,
+                    type: 'Standard',
+                    features: ['EV Charging', 'Covered']
+                });
+                setLoading(false);
+            });
+    }, [id, user.token]);
+
+    if (loading) return <div className="text-center mt-5">Loading...</div>;
+    if (!lot) return <div className="text-center mt-5">Lot not found</div>;
 
     return (
         <div className="fade-in">
@@ -21,12 +49,12 @@ const ParkingDetails = () => {
                     <h4>{lot.name}</h4>
                     <p className="text-secondary"><i className="bi bi-geo-alt me-2"></i>{lot.location}</p>
                     <div className="d-flex flex-wrap gap-3 my-3">
-                        <span className="badge bg-primary p-2">${lot.price}/hr</span>
-                        <span className="badge bg-success p-2">{lot.available} spots available</span>
+                        <span className="badge bg-primary p-2">${lot.hourly_rate}/hr</span>
+                        <span className="badge bg-success p-2">{lot.available_spots} spots available</span>
                         <span className="badge bg-secondary p-2">{lot.type}</span>
                     </div>
                     <p className="details-features">
-                        <strong>Features:</strong> {lot.features.map((f, i) => <span key={i} className="badge bg-info text-dark me-1">{f}</span>)}
+                        <strong>Features:</strong> {(lot.features || []).map((f, i) => <span key={i} className="badge bg-info text-dark me-1">{f}</span>)}
                     </p>
                     <Button variant="primary" href={`#/driver/reserve/${lot.id}`}>
                         <i className="bi bi-parking me-1"></i>Reserve a Spot

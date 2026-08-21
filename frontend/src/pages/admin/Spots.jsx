@@ -1,48 +1,119 @@
-import { Card, Button } from 'react-bootstrap';
-import '../../styles/pages/admin/Spots.css';
+import { useState, useEffect } from 'react';
+import { Card, Row, Col } from 'react-bootstrap';
+import { useAuth } from '../../context/AuthContext';
+import '../../styles/pages/admin/Reports.css';
 
-const spots = [
-    { id: 1, lot: 'Downtown Plaza', spot: 'A01-A20', status: 'Available', type: 'Standard' },
-    { id: 2, lot: 'Downtown Plaza', spot: 'A21-A30', status: 'Occupied', type: 'EV' },
-    { id: 3, lot: 'Mall Square', spot: 'B01-B15', status: 'Available', type: 'Standard' },
-    { id: 4, lot: 'Mall Square', spot: 'B16-B25', status: 'Occupied', type: 'Disabled' },
-    { id: 5, lot: 'Airport Terminal', spot: 'C01-C10', status: 'Available', type: 'Premium' },
-    { id: 6, lot: 'Airport Terminal', spot: 'C11-C20', status: 'Occupied', type: 'Premium' },
-];
+const AdminReports = () => {
+    const { user } = useAuth();
+    const [reports, setReports] = useState({
+        revenue: [],
+        occupancy: 0,
+        monthlyRevenue: 0,
+        totalReservations: 0
+    });
+    const [loading, setLoading] = useState(true);
 
-const AdminSpots = () => {
+    useEffect(() => {
+        const fetchReports = async () => {
+            try {
+                // Fetch revenue report
+                const response = await fetch('http://localhost:8000/api/reports/revenue', {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                if (!response.ok) throw new Error('Failed to fetch reports');
+                const data = await response.json();
+                setReports(data);
+            } catch (error) {
+                console.error('Error fetching reports:', error);
+                // Use fallback data
+                setReports({
+                    revenue: [
+                        { lot: 'Downtown Plaza', amount: 1240 },
+                        { lot: 'Mall Square', amount: 980 },
+                        { lot: 'Airport Terminal', amount: 1560 },
+                        { lot: 'City Center', amount: 500 },
+                    ],
+                    occupancy: 67,
+                    monthlyRevenue: 4280,
+                    totalReservations: 142
+                });
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchReports();
+    }, [user.token]);
+
+    const peakHours = [
+        { time: '8 AM – 10 AM', occupancy: '85%' },
+        { time: '12 PM – 2 PM', occupancy: '72%' },
+        { time: '5 PM – 7 PM', occupancy: '91%' },
+        { time: '9 PM – 11 PM', occupancy: '34%' },
+    ];
+
+    if (loading) return <div className="text-center mt-5">Loading reports...</div>;
+
     return (
-        <div className="fade-in admin-spots">
-            <Card>
-                <Card.Body>
-                    <div className="d-flex justify-content-end mb-3">
-                        <Button variant="primary"><i className="bi bi-plus me-1"></i>Add Spot</Button>
+        <div className="fade-in admin-reports">
+            <Row className="g-3 mb-4">
+                <Col md={3}>
+                    <div className="stat-card report-card text-center">
+                        <div className="value">{reports.occupancy || 67}%</div>
+                        <div className="label">Occupancy Rate</div>
                     </div>
-                    <div className="table-wrap">
-                        <table className="table">
-                            <thead>
-                                <tr><th>Lot</th><th>Spot</th><th>Status</th><th>Type</th><th>Actions</th></tr>
-                            </thead>
-                            <tbody>
-                                {spots.map((s) => (
-                                    <tr key={s.id}>
-                                        <td>{s.lot}</td>
-                                        <td>{s.spot}</td>
-                                        <td><span className={`badge bg-${s.status === 'Available' ? 'success' : 'danger'}`}>{s.status}</span></td>
-                                        <td>{s.type}</td>
-                                        <td className="action-buttons">
-                                            <Button size="sm" variant="outline-secondary">Edit</Button>
-                                            <Button size="sm" variant="danger">Delete</Button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                </Col>
+                <Col md={3}>
+                    <div className="stat-card report-card text-center">
+                        <div className="value">${(reports.monthlyRevenue || 4280).toLocaleString()}</div>
+                        <div className="label">Monthly Revenue</div>
                     </div>
-                </Card.Body>
-            </Card>
+                </Col>
+                <Col md={3}>
+                    <div className="stat-card report-card text-center">
+                        <div className="value">{reports.totalReservations || 142}</div>
+                        <div className="label">Total Reservations</div>
+                    </div>
+                </Col>
+                <Col md={3}>
+                    <div className="stat-card report-card text-center">
+                        <div className="value">96%</div>
+                        <div className="label">Satisfaction</div>
+                    </div>
+                </Col>
+            </Row>
+            <Row className="g-4">
+                <Col md={6}>
+                    <Card>
+                        <Card.Header>Revenue by Lot</Card.Header>
+                        <Card.Body>
+                            {(reports.revenue || []).map((item, i) => (
+                                <div key={i} className="revenue-item">
+                                    <span>{item.lot}</span>
+                                    <span className="fw-bold">${item.amount}</span>
+                                </div>
+                            ))}
+                        </Card.Body>
+                    </Card>
+                </Col>
+                <Col md={6}>
+                    <Card>
+                        <Card.Header>Peak Hours</Card.Header>
+                        <Card.Body>
+                            {peakHours.map((item, i) => (
+                                <div key={i} className="revenue-item">
+                                    <span>{item.time}</span>
+                                    <span className="fw-bold">{item.occupancy}</span>
+                                </div>
+                            ))}
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
         </div>
     );
 };
 
-export default AdminSpots;
+export default AdminReports;

@@ -6,27 +6,32 @@ use Illuminate\Database\Eloquent\Model;
 
 class Find extends Model
 {
-    protected $primaryKey = 'FindID';
     protected $fillable = [
-        'SessionID', 'ReservationID', 'Amount', 'Reason',
-        'IssueDate', 'Status', 'PaymentID'
+        'session_id',
+        'reservation_id',
+        'amount',
+        'reason',
+        'issue_date',
+        'status',
+        'payment_id'
     ];
+
     protected $casts = [
-        'IssueDate' => 'datetime',
+        'issue_date' => 'datetime',
     ];
 
     public function parkingSession()
     {
-        return $this->belongsTo(ParkingSession::class, 'SessionID', 'SessionID');
+        return $this->belongsTo(ParkingSession::class, 'session_id');
     }
 
     public function reservation()
     {
-        return $this->belongsTo(Reservation::class, 'ReservationID', 'ReservationID');
+        return $this->belongsTo(Reservation::class, 'reservation_id');
     }
 
     public function payment()
     {
-        return $this->belongsTo(Payment::class, 'PaymentID', 'PaymentID');
+        return $this->belongsTo(Payment::class, 'payment_id');
     }
 }

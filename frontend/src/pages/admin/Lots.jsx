@@ -1,21 +1,69 @@
+import { useState, useEffect } from 'react';
 import { Card, Button } from 'react-bootstrap';
+import { useAuth } from '../../context/AuthContext';
 import '../../styles/pages/admin/Lots.css';
 
-const lots = [
-    { id: 1, name: 'Downtown Plaza', location: '123 Main St, NYC', total: 100, available: 42, price: 5, type: 'Standard' },
-    { id: 2, name: 'Mall Square', location: '456 Mall Ave, LA', total: 200, available: 87, price: 3, type: 'Standard' },
-    { id: 3, name: 'Airport Terminal', location: '789 Airport Rd, SF', total: 150, available: 23, price: 8, type: 'Premium' },
-    { id: 4, name: 'City Center', location: '321 Center Blvd, CHI', total: 80, available: 15, price: 6, type: 'Standard' },
-    { id: 5, name: 'Harbor View', location: '555 Bay St, SEA', total: 120, available: 61, price: 4, type: 'Standard' },
-];
-
 const AdminLots = () => {
+    const { user } = useAuth();
+    const [lots, setLots] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchLots = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/api/lots', {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`,
+                    'Accept': 'application/json'
+                }
+            });
+            if (!response.ok) throw new Error('Failed to fetch lots');
+            const data = await response.json();
+            setLots(data);
+        } catch (error) {
+            console.error('Error fetching lots:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchLots();
+    }, [user.token]);
+
+    const handleDelete = async (id) => {
+        if (!confirm('Are you sure you want to delete this lot?')) return;
+        try {
+            const response = await fetch(`http://localhost:8000/api/lots/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${user.token}`,
+                    'Accept': 'application/json'
+                }
+            });
+            if (!response.ok) throw new Error('Failed to delete lot');
+            setLots(lots.filter(l => l.id !== id));
+            alert('Lot deleted successfully!');
+        } catch (error) {
+            console.error('Error deleting lot:', error);
+            alert('Failed to delete lot');
+        }
+    };
+
+    const handleEdit = (id) => {
+        // Navigate to edit form or open modal
+        alert(`Edit lot ${id} - Implement edit modal/form`);
+    };
+
+    if (loading) return <div className="text-center mt-5">Loading lots...</div>;
+
     return (
         <div className="fade-in admin-lots">
             <Card>
                 <Card.Body>
                     <div className="d-flex justify-content-end mb-3">
-                        <Button variant="primary"><i className="bi bi-plus me-1"></i>Add Lot</Button>
+                        <Button variant="primary" onClick={() => alert('Open Add Lot Modal/Form')}>
+                            <i className="bi bi-plus me-1"></i>Add Lot
+                        </Button>
                     </div>
                     <div className="table-wrap">
                         <table className="table">
@@ -27,13 +75,13 @@ const AdminLots = () => {
                                     <tr key={l.id}>
                                         <td>{l.name}</td>
                                         <td>{l.location}</td>
-                                        <td>{l.total}</td>
-                                        <td>{l.available}</td>
-                                        <td>${l.price}/hr</td>
+                                        <td>{l.total_spots}</td>
+                                        <td>{l.available_spots}</td>
+                                        <td>${l.hourly_rate}/hr</td>
                                         <td>{l.type}</td>
                                         <td className="action-buttons">
-                                            <Button size="sm" variant="outline-secondary">Edit</Button>
-                                            <Button size="sm" variant="danger">Delete</Button>
+                                            <Button size="sm" variant="outline-secondary" onClick={() => handleEdit(l.id)}>Edit</Button>
+                                            <Button size="sm" variant="danger" onClick={() => handleDelete(l.id)}>Delete</Button>
                                         </td>
                                     </tr>
                                 ))}
