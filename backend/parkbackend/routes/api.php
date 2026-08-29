@@ -18,6 +18,7 @@ Route::post('/test-register', function () {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/stats', [StatsController::class, 'index']);
+Route::get('/revenue-by-lot', [StatsController::class, 'revenueByLot']);
 // ==================== PROTECTED ROUTES (require authentication) ====================
 Route::middleware('auth:sanctum')->group(function () {
 
