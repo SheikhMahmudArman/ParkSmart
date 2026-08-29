@@ -309,6 +309,90 @@
     }
 }
 
+/* ===== STATS SECTION ===== */
+.stats-section {
+    padding: 4rem 0;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.stat-card-big {
+    padding: 2.5rem 2rem;
+    border-radius: 20px;
+    background: rgba(26, 26, 26, 0.6) !important;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card-big:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.stat-card-big .stat-number {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -1px;
+    margin-bottom: 0.25rem;
+}
+
+.stat-card-big .stat-label {
+    font-size: 1rem;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.stat-card-big .stat-icon-big {
+    position: absolute;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    font-size: 4rem;
+    opacity: 0.08;
+    color: #dc3545;
+}
+
+@media (max-width: 768px) {
+    .stat-card-big .stat-number {
+        font-size: 2.5rem;
+    }
+
+    .stat-card-big .stat-icon-big {
+        font-size: 3rem;
+    }
+}
+
+/* Revenue by Lot Section */
+.revenue-section {
+    padding: 4rem 0;
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.revenue-section .table {
+    margin-bottom: 0;
+}
+
+.revenue-section .table th {
+    border-bottom: 2px solid #333;
+    color: #aaa;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+}
+
+.revenue-section .table td {
+    border-bottom: 1px solid #2a2a2a;
+    color: #ddd;
+}
+
+.revenue-section .table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
 /* ----- RESPONSIVE ----- */
 @media (max-width: 768px) {
     .hero-title {

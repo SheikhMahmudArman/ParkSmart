@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import '../styles/pages/Landing.css';
+import { useState, useEffect } from 'react';
 
 const Landing = () => {
     const features = [
@@ -12,6 +13,39 @@ const Landing = () => {
         { icon: 'bi-people', title: 'Role-based Access', desc: 'Driver, Staff, Admin – each with tailored dashboards and tools.' },
     ];
 
+    const [stats, setStats] = useState({ total_users: 0, total_revenue: 0 });
+    const [statsLoading, setStatsLoading] = useState(true);
+
+    // NEW: State for revenue by lot
+    const [revenueByLot, setRevenueByLot] = useState([]);
+    const [revenueLoading, setRevenueLoading] = useState(true);
+
+    useEffect(() => {
+        // Fetch total stats
+        fetch('http://localhost:8000/api/stats')
+            .then(res => res.json())
+            .then(data => {
+                setStats(data);
+                setStatsLoading(false);
+            })
+            .catch(err => {
+                console.error('Error fetching stats:', err);
+                setStatsLoading(false);
+            });
+
+        // NEW: Fetch revenue by lot (JOIN + GROUP BY)
+        fetch('http://localhost:8000/api/revenue-by-lot')
+            .then(res => res.json())
+            .then(data => {
+                setRevenueByLot(data);
+                setRevenueLoading(false);
+            })
+            .catch(err => {
+                console.error('Error fetching revenue-by-lot:', err);
+                setRevenueLoading(false);
+            });
+    }, []);
+
     return (
         <div className="landing-wrapper">
             {/* Hero Section */}
@@ -19,9 +53,7 @@ const Landing = () => {
                 <Container>
                     <Row className="justify-content-center text-center">
                         <Col md={8} lg={7}>
-                            <div className="hero-badge mb-3">
-                                <i className="bi bi-rocket-takeoff me-2"></i>Smart Parking Management
-                            </div>
+
                             <h1 className="hero-title">
                                 Park<span className="highlight">Smart</span>
                             </h1>
@@ -49,6 +81,71 @@ const Landing = () => {
                                     <span className="stat-number">98%</span>
                                     <span className="stat-label">Satisfaction</span>
                                 </div>
+                            </div>
+                        </Col>
+                    </Row>
+                </Container>
+            </section>
+
+            {/* Stats Section – Total Users & Revenue */}
+            <section className="stats-section">
+                <Container>
+                    <Row className="g-4 justify-content-center">
+                        <Col md={6} lg={5}>
+                            <div className="stat-card-big text-center glass">
+                                <div className="stat-number">
+                                    {statsLoading ? '...' : (typeof stats.total_users === 'number' ? stats.total_users : 0)}
+                                </div>
+                                <div className="stat-label">Total Users</div>
+                                <i className="bi bi-people stat-icon-big"></i>
+                            </div>
+                        </Col>
+                        <Col md={6} lg={5}>
+                            <div className="stat-card-big text-center glass">
+                                <div className="stat-number">
+                                    {statsLoading ? '...' : `$${Number(stats.total_revenue).toFixed(2)}`}
+                                </div>
+                                <div className="stat-label">Total Revenue</div>
+                                <i className="bi bi-currency-dollar stat-icon-big"></i>
+                            </div>
+                        </Col>
+                    </Row>
+                </Container>
+            </section>
+
+            {/* NEW: Revenue by Parking Lot – JOIN + GROUP BY */}
+            <section className="revenue-section">
+                <Container>
+                    <h2 className="text-center text-white mb-4">Revenue by Parking Lot</h2>
+                    <Row className="justify-content-center">
+                        <Col md={8} lg={6}>
+                            <div className="card glass p-3">
+                                {revenueLoading ? (
+                                    <p className="text-center text-secondary">Loading revenue data...</p>
+                                ) : revenueByLot.length === 0 ? (
+                                    <p className="text-center text-secondary">No revenue data available.</p>
+                                ) : (
+                                    <div className="table-wrap">
+                                        <table className="table table-dark table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Parking Lot</th>
+                                                    <th>Transactions</th>
+                                                    <th>Total Revenue</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {revenueByLot.map((item, index) => (
+                                                    <tr key={index}>
+                                                        <td><strong>{item.lot_name}</strong></td>
+                                                        <td>{item.total_transactions}</td>
+                                                        <td>${parseFloat(item.total_revenue).toFixed(2)}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
                             </div>
                         </Col>
                     </Row>
