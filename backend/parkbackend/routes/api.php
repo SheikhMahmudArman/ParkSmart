@@ -7,6 +7,7 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ParkingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LotController;
+use App\Http\Controllers\StatsController;
 
 // ==================== PUBLIC ROUTES ====================
 Route::post('/test-register', function () {
@@ -16,7 +17,7 @@ Route::post('/test-register', function () {
 });
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-
+Route::get('/stats', [StatsController::class, 'index']);
 // ==================== PROTECTED ROUTES (require authentication) ====================
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -82,4 +83,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // ---------- REPORTS (Admin) ----------
     Route::get('/reports/revenue', [ParkingController::class, 'revenueReport']);
+
 });
