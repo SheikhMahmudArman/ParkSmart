@@ -84,5 +84,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // ---------- REPORTS (Admin) ----------
     Route::get('/reports/revenue', [ParkingController::class, 'revenueReport']);
-
+    Route::get('/reports/reservations-by-lot', [StatsController::class, 'reservationsByLot']);
+    Route::get('/reports/spending-by-driver', [StatsController::class, 'spendingByDriver']);
 });

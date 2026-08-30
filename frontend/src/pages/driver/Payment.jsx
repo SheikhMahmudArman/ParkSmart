@@ -44,7 +44,7 @@ const Payment = () => {
                                         <tr key={p.id || p.PaymentID}>
                                             <td>{new Date(p.date || p.PaymentDate).toLocaleDateString()}</td>
                                             <td>{p.lot || p.lot_name || 'N/A'}</td>
-                                            <td>${(p.amount || p.Amount).toFixed(2)}</td>
+                                            <td>${Number(p.amount || p.Amount || 0).toFixed(2)}</td>
                                             <td><span className={`badge bg-${(p.status || p.Status) === 'Completed' ? 'success' : 'warning'}`}>{p.status || p.Status}</span></td>
                                             <td>{p.method || p.Method}</td>
                                         </tr>

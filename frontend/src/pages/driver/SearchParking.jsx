@@ -93,7 +93,13 @@ const SearchParking = () => {
                                     <span className="badge bg-primary">{lot.type}</span>
                                     <span className="badge bg-success">{lot.available_spots} / {lot.total_spots} available</span>
                                     <span className="badge bg-secondary">${lot.hourly_rate}/hr</span>
-                                    {lot.features && lot.features.map((f, i) => <span key={i} className="badge bg-info text-dark">{f}</span>)}
+                                    {lot.features &&
+                                        lot.features.split(',').map((f, i) => (
+                                            <span key={i} className="badge bg-info text-dark">
+                                                {f.trim()}
+                                            </span>
+                                        ))
+                                    }
                                 </div>
                             </div>
                             <div className="d-flex gap-2 mt-2 mt-md-0">
