@@ -15,7 +15,7 @@ class PaymentSeeder extends Seeder
         $session = ParkingSession::first();
 
         if (!$reservation) {
-            $this->command->info('⚠️ Missing reservation data. Run main seeder first.');
+            $this->command->info(' Missing reservation data. Run main seeder first.');
             return;
         }
 
@@ -49,6 +49,6 @@ class PaymentSeeder extends Seeder
             'TransactionID' => null
         ]);
 
-        $this->command->info('✅ Payment seeder completed.');
+        $this->command->info(' Payment seeder completed.');
     }
 }

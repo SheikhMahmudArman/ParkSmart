@@ -15,7 +15,7 @@ class FindSeeder extends Seeder
         $reservation = Reservation::first();
 
         if (!$session || !$reservation) {
-            $this->command->info('⚠️ Missing session/reservation data. Run main seeder first.');
+            $this->command->info(' Missing session/reservation data. Run main seeder first.');
             return;
         }
 
@@ -49,6 +49,6 @@ class FindSeeder extends Seeder
             'PaymentID' => null
         ]);
 
-        $this->command->info('✅ Find seeder completed.');
+        $this->command->info('Find seeder completed.');
     }
 }

@@ -104,29 +104,29 @@ class DemoDataSeeder extends Seeder
         ]);
 
         // 5. Create Reservations
-       $res1 = Reservation::create([
-         'user_id' => $user1->id,
-         'vehicle_id' => $vehicle1->id,
-        'space_id' => 1,
-         'reservation_date' => now()->toDateString(),
-         'start_time' => now()->subHours(2),
-        'end_time' => now()->addHours(2),
-        'status' => 'Active',
-        'total_amount' => 10.00,
-        'payment_status' => 'Paid'
-    ]);
+        $res1 = Reservation::create([
+            'user_id' => $user1->id,
+            'vehicle_id' => $vehicle1->id,
+            'space_id' => 1,
+            'reservation_date' => now()->toDateString(),
+            'start_time' => now()->subHours(2),
+            'end_time' => now()->addHours(2),
+            'status' => 'Active',
+            'total_amount' => 10.00,
+            'payment_status' => 'Paid'
+        ]);
 
-       $res2 = Reservation::create([
-    'user_id' => $user2->id,
-    'vehicle_id' => $vehicle2->id,
-    'space_id' => 3,
-    'reservation_date' => now()->subDays(1)->toDateString(),
-    'start_time' => now()->subDays(1)->subHours(3),
-    'end_time' => now()->subDays(1)->subHours(1),
-    'status' => 'Completed',
-    'total_amount' => 16.00,
-    'payment_status' => 'Paid'
-]);
+        $res2 = Reservation::create([
+            'user_id' => $user2->id,
+            'vehicle_id' => $vehicle2->id,
+            'space_id' => 3,
+            'reservation_date' => now()->subDays(1)->toDateString(),
+            'start_time' => now()->subDays(1)->subHours(3),
+            'end_time' => now()->subDays(1)->subHours(1),
+            'status' => 'Completed',
+            'total_amount' => 16.00,
+            'payment_status' => 'Paid'
+        ]);
 
         $res3 = Reservation::create([
             'user_id' => $user1->id,
@@ -226,8 +226,8 @@ class DemoDataSeeder extends Seeder
             'payment_id' => 2
         ]);
 
-        $this->command->info('✅ Demo data seeded successfully!');
-        $this->command->info('👤 Users: john@driver.com, sarah@driver.com, staff@parking.com, admin@parking.com');
-        $this->command->info('🔑 Password for all: 123456');
+        $this->command->info(' Demo data seeded successfully!');
+        $this->command->info(' Users: john@driver.com, sarah@driver.com, staff@parking.com, admin@parking.com');
+        $this->command->info(' Password for all: 123456');
     }
 }

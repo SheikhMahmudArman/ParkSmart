@@ -18,7 +18,7 @@ class ParkingSessionSeeder extends Seeder
         $space = ParkingSpace::first();
 
         if (!$reservation || !$vehicle || !$space) {
-            $this->command->info('⚠️ Missing related data. Run main seeder first.');
+            $this->command->info(' Missing related data. Run main seeder first.');
             return;
         }
 
@@ -55,6 +55,6 @@ class ParkingSessionSeeder extends Seeder
             'TotalCost' => 16.00
         ]);
 
-        $this->command->info('✅ ParkingSession seeder completed.');
+        $this->command->info(' ParkingSession seeder completed.');
     }
 }
