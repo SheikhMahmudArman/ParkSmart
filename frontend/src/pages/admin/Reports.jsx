@@ -26,7 +26,7 @@ const AdminReports = () => {
                     'Accept': 'application/json'
                 };
 
-                // Fetch existing revenue report
+                // fetch revenue report
                 const revenueResponse = await fetch(
                     'http://localhost:8000/api/reports/revenue',
                     { headers }
@@ -38,7 +38,7 @@ const AdminReports = () => {
 
                 const revenueData = await revenueResponse.json();
 
-                // Fetch Reservations Per Lot
+                // fetch Reservations Per Lot
                 const reservationsResponse = await fetch(
                     'http://localhost:8000/api/reports/reservations-by-lot',
                     { headers }
@@ -50,7 +50,7 @@ const AdminReports = () => {
 
                 const reservationsData = await reservationsResponse.json();
 
-                // Fetch Total Spending By Driver
+                // fetch Total Spending By Driver
                 const spendingResponse = await fetch(
                     'http://localhost:8000/api/reports/spending-by-driver',
                     { headers }
@@ -70,7 +70,7 @@ const AdminReports = () => {
             } catch (error) {
                 console.error('Error fetching reports:', error);
 
-                // Keep existing fallback data
+                // fallback data
                 setReports({
                     revenue: [
                         { lot: 'Downtown Plaza', amount: 1240 },
@@ -158,7 +158,7 @@ const AdminReports = () => {
 
             </Row>
 
-            {/* ==================== EXISTING REPORTS ==================== */}
+            {/* ==================== REPORTS ==================== */}
             <Row className="g-4 mb-4">
 
                 {/* Revenue by Lot */}

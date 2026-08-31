@@ -36,7 +36,11 @@ const AdminPayments = () => {
         fetchPayments();
     }, [user.token]);
 
-    const total = payments.reduce((sum, p) => sum + (p.status === 'Completed' ? p.amount : 0), 0);
+    const total = payments.reduce(
+        (sum, p) =>
+            sum + (p.status === 'Completed' ? Number(p.amount || 0) : 0),
+        0
+    );
     const completed = payments.filter(p => p.status === 'Completed').length;
     const pending = payments.filter(p => p.status === 'Pending').length;
 
@@ -76,7 +80,7 @@ const AdminPayments = () => {
                                     <tr key={p.id}>
                                         <td>{p.date || new Date(p.PaymentDate).toLocaleDateString()}</td>
                                         <td>{p.lot || p.lot_name}</td>
-                                        <td className="amount">${(p.amount || p.Amount).toFixed(2)}</td>
+                                        <td className="amount">${Number(p.amount || p.Amount || 0).toFixed(2)}</td>
                                         <td><span className={`badge bg-${(p.status || p.Status) === 'Completed' ? 'success' : 'warning'}`}>{p.status || p.Status}</span></td>
                                         <td>{p.method || p.Method}</td>
                                     </tr>
