@@ -34,7 +34,7 @@ const Sidebar = ({ role, onLogout }) => {
         <div className="sidebar d-flex flex-column flex-shrink-0" style={{ width: '250px' }}>
             <div className="brand d-flex align-items-center gap-2 px-3">
                 <i className="bi bi-p-circle fs-3"></i>
-                <span>ParkManager</span>
+                <span>ParkSmart</span>
             </div>
             <ul className="nav flex-column flex-grow-1">
                 {items.map((item) => (

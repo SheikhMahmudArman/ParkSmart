@@ -31,7 +31,8 @@ import AdminPayments from './pages/admin/Payments';
 import AdminReports from './pages/admin/Reports';
 import Register from './pages/Register';
 function App() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  if (loading) return <div className="p-5" role="status">Restoring your session…</div>;
 
   // Not logged in – public routes
   if (!user) {

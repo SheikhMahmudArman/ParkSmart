@@ -1,62 +1,11 @@
-import { useState, useEffect } from 'react';
-import { Card } from 'react-bootstrap';
-import { useAuth } from '../../context/AuthContext';
-
-const Payment = () => {
-    const { user } = useAuth();
-    const [payments, setPayments] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        fetch(`http://localhost:8000/api/users/${user.id}/payments`, {
-            headers: {
-                'Authorization': `Bearer ${user.token}`,
-                'Accept': 'application/json'
-            }
-        })
-            .then(res => res.json())
-            .then(data => {
-                setPayments(data);
-                setLoading(false);
-            })
-            .catch(err => {
-                console.error('Error fetching payments:', err);
-                setLoading(false);
-            });
-    }, [user.id, user.token]);
-
-    if (loading) return <div className="text-center mt-5">Loading payment history...</div>;
-
-    return (
-        <div className="fade-in">
-            <Card>
-                <Card.Body>
-                    <div className="table-wrap">
-                        <table className="table">
-                            <thead>
-                                <tr><th>Date</th><th>Lot</th><th>Amount</th><th>Status</th><th>Method</th></tr>
-                            </thead>
-                            <tbody>
-                                {payments.length === 0 ? (
-                                    <tr><td colSpan="5" className="text-center text-secondary">No payments found</td></tr>
-                                ) : (
-                                    payments.map((p) => (
-                                        <tr key={p.id || p.PaymentID}>
-                                            <td>{new Date(p.date || p.PaymentDate).toLocaleDateString()}</td>
-                                            <td>{p.lot || p.lot_name || 'N/A'}</td>
-                                            <td>${Number(p.amount || p.Amount || 0).toFixed(2)}</td>
-                                            <td><span className={`badge bg-${(p.status || p.Status) === 'Completed' ? 'success' : 'warning'}`}>{p.status || p.Status}</span></td>
-                                            <td>{p.method || p.Method}</td>
-                                        </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </Card.Body>
-            </Card>
-        </div>
-    );
-};
-
-export default Payment;
+import {useAuth} from '../../context/AuthContext';
+import {api,money} from '../../api';
+import {useData,useAction,ActionNotice,Notice,Panel,Table} from '../../components/DataUI';
+import PaymentsTable from '../../components/PaymentsTable';
+export default function Payment(){
+ const {user}=useAuth(),state=useData(`/users/${user.id}/payments`),fines=useData(`/users/${user.id}/finds`);
+ const action=useAction(async()=>{await Promise.all([state.reload(),fines.reload()]);});
+ return <><Panel title="Payment history"><p>Course demonstration only. No real card or bank payments are processed.</p><Notice {...state}/><ActionNotice {...action}/><PaymentsTable rows={state.data||[]}/></Panel>
+ <Panel title="Overstay fines"><Notice {...fines}/><Table rows={fines.data||[]} columns={[{key:'id',label:'#'},{key:'reason',label:'Reason'},{key:'amount',label:'Amount',render:r=>money(r.amount)},{key:'status',label:'Status'}]}
+ actions={r=>r.status==='Pending'&&<button className="btn btn-sm btn-success" disabled={action.busy} onClick={()=>action.run(()=>api(`/finds/${r.id}/pay`,{method:'POST',body:{payment_method:'Demo'}}),'Demo fine payment recorded')}>Pay demo</button>}/></Panel></>;
+}

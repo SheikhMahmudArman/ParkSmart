@@ -1,171 +1,26 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Form, Button, Row, Col } from 'react-bootstrap';
-import { useAuth } from '../../context/AuthContext';
-import '../../styles/pages/driver/ReserveSpot.css';
-
-const ReserveSpot = () => {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const { user } = useAuth();
-    const [lot, setLot] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [formData, setFormData] = useState({
-        date: new Date().toISOString().split('T')[0],
-        start_time: '10:00',
-        end_time: '12:00',
-        vehicle_id: ''
-    });
-    const [vehicles, setVehicles] = useState([]);
-
-    useEffect(() => {
-        // Fetch lot details
-        fetch(`http://localhost:8000/api/lots/${id}`, {
-            headers: {
-                'Authorization': `Bearer ${user.token}`,
-                'Accept': 'application/json'
-            }
-        })
-            .then(res => res.json())
-            .then(data => {
-                setLot(data);
-                setLoading(false);
-            })
-            .catch(err => {
-                console.error('Error fetching lot:', err);
-                // Fallback
-                setLot({
-                    id: 1,
-                    name: 'Downtown Plaza',
-                    location: '123 Main St, NYC',
-                    hourly_rate: 5,
-                    total_spots: 100,
-                    available_spots: 42,
-                    type: 'Standard'
-                });
-                setLoading(false);
-            });
-
-        // Fetch user's vehicles
-        fetch(`http://localhost:8000/api/users/${user.id}/vehicles`, {
-            headers: {
-                'Authorization': `Bearer ${user.token}`,
-                'Accept': 'application/json'
-            }
-        })
-            .then(res => res.json())
-            .then(data => {
-                setVehicles(data || []);
-            })
-            .catch(err => {
-                console.error('Error fetching vehicles:', err);
-                setVehicles([
-                    { id: 1, make: 'Toyota', model: 'Camry', plate_number: 'ABC-123' }
-                ]);
-            });
-    }, [id, user.id, user.token]);
-
-    const handleReserve = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await fetch('http://localhost:8000/api/reservations', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${user.token}`,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    lot_id: lot.id,
-                    vehicle_id: formData.vehicle_id,
-                    reservation_date: formData.date,
-                    start_time: formData.start_time,
-                    end_time: formData.end_time
-                })
-            });
-            if (!response.ok) throw new Error('Failed to create reservation');
-            const data = await response.json();
-            alert(`✅ Reservation confirmed!\n\nLot: ${lot.name}\nDate: ${formData.date}\nTime: ${formData.start_time} - ${formData.end_time}\nSpot: ${data.spot_number || 'Assigned'}`);
-            navigate('/driver/reservations');
-        } catch (error) {
-            console.error('Error creating reservation:', error);
-            alert('Failed to create reservation. Please try again.');
-        }
-    };
-
-    if (loading) return <div className="text-center mt-5">Loading...</div>;
-
-    return (
-        <div className="fade-in">
-            <Card className="reserve-card">
-                <Card.Body>
-                    <h5 className="mb-3">Reserve a Spot</h5>
-                    <Form onSubmit={handleReserve}>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Parking Lot</Form.Label>
-                            <Form.Control type="text" value={lot.name} disabled />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Date</Form.Label>
-                            <Form.Control 
-                                type="date" 
-                                value={formData.date} 
-                                onChange={(e) => setFormData({...formData, date: e.target.value})}
-                                required
-                            />
-                        </Form.Group>
-                        <Row>
-                            <Col>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Start Time</Form.Label>
-                                    <Form.Control 
-                                        type="time" 
-                                        value={formData.start_time} 
-                                        onChange={(e) => setFormData({...formData, start_time: e.target.value})}
-                                        required
-                                    />
-                                </Form.Group>
-                            </Col>
-                            <Col>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>End Time</Form.Label>
-                                    <Form.Control 
-                                        type="time" 
-                                        value={formData.end_time} 
-                                        onChange={(e) => setFormData({...formData, end_time: e.target.value})}
-                                        required
-                                    />
-                                </Form.Group>
-                            </Col>
-                        </Row>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Vehicle</Form.Label>
-                            <Form.Select 
-                                value={formData.vehicle_id} 
-                                onChange={(e) => setFormData({...formData, vehicle_id: e.target.value})}
-                                required
-                            >
-                                <option value="">Select a vehicle...</option>
-                                {vehicles.map((v) => (
-                                    <option key={v.id} value={v.id}>
-                                        {v.make} {v.model} ({v.plate_number})
-                                    </option>
-                                ))}
-                            </Form.Select>
-                        </Form.Group>
-                        <div className="price-estimate mb-3">
-                            <small className="text-secondary">
-                                <i className="bi bi-info-circle me-1"></i> Price estimate: <strong>${lot.hourly_rate * 2}.00</strong> (2 hours)
-                            </small>
-                        </div>
-                        <Button variant="success" type="submit">
-                            <i className="bi bi-check-circle me-1"></i>Confirm Reservation
-                        </Button>
-                    </Form>
-                </Card.Body>
-            </Card>
-        </div>
-    );
-};
-
-export default ReserveSpot;
+import {useState} from 'react';
+import {Link,useParams,useNavigate} from 'react-router-dom';
+import {useAuth} from '../../context/AuthContext';
+import {api,money} from '../../api';
+import {useData,useAction,ActionNotice,Notice,Panel,Field,Select} from '../../components/DataUI';
+export default function ReserveSpot(){
+ const {id}=useParams(),{user}=useAuth(),navigate=useNavigate();
+ const lot=useData('/lots/'+id),vehicles=useData(`/users/${user.id}/vehicles`);
+ const [form,setForm]=useState({reservation_date:new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Dhaka'}),start_time:'',end_time:'',vehicle_id:''});
+ const action=useAction();
+ const change=e=>setForm({...form,[e.target.name]:e.target.value});
+ const minutes=t=>t?Number(t.split(':')[0])*60+Number(t.split(':')[1]):0;
+ const hours=Math.ceil((minutes(form.end_time)-minutes(form.start_time))/60);
+ async function submit(e){e.preventDefault();if(await action.run(()=>api('/reservations',{method:'POST',body:{...form,lot_id:Number(id)}}),'Reservation created'))navigate('/driver/reservations');}
+ return <Panel title={`Reserve at ${lot.data?.name||'parking lot'}`}><Notice error={lot.error||vehicles.error} loading={lot.loading||vehicles.loading}/><ActionNotice {...action}/>
+ {lot.data&&vehicles.data&&<form onSubmit={submit}>
+ <p>All dates and times are Asia/Dhaka. Start and end must be on the same date, with the start in the future.</p>
+ <Field label="Date" name="reservation_date" type="date" value={form.reservation_date} onChange={change} required/>
+ <Field label="Start time" name="start_time" type="time" value={form.start_time} onChange={change} required/>
+ <Field label="End time" name="end_time" type="time" value={form.end_time} onChange={change} required/>
+ <Select label="Vehicle" name="vehicle_id" value={form.vehicle_id} onChange={change} required><option value="">Choose vehicle</option>{vehicles.data.map(v=><option key={v.id} value={v.id}>{v.plate_number} · {v.make} {v.model}</option>)}</Select>
+ {!vehicles.data.length&&<p>Add a vehicle in <Link to="/driver/profile">Profile</Link> first.</p>}
+ <p>Estimated booked price: {hours>0?money(hours*Number(lot.data.hourly_rate)):'Choose a valid time interval'}. Each started hour is billed.</p>
+ <button className="btn btn-success" disabled={action.busy||hours<=0||!form.vehicle_id}>Create reservation</button>
+ </form>}</Panel>;
+}

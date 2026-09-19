@@ -347,3 +347,11 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: #666;
 }
+/* Small screens keep navigation reachable without squeezing page forms. */
+@media (max-width: 640px) {
+  .app-shell { flex-direction: column; }
+  .app-shell .sidebar { width: 100% !important; min-height: auto !important; height: auto !important; position: static !important; }
+  .app-shell .sidebar .nav { flex-direction: row !important; flex-wrap: wrap; }
+  .app-shell .sidebar .nav-link { padding: .6rem; }
+  .app-shell .topbar { flex-wrap: wrap; gap: .75rem; }
+}

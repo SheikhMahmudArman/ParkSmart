@@ -1,44 +1,8 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
-
-const DriverDashboard = () => {
-    const { user } = useAuth();
-    const [reservations, setReservations] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        fetch(`http://localhost:8000/api/users/${user.id}/reservations`, {
-            headers: { 
-                'Authorization': `Bearer ${user.token}`,
-                'Accept': 'application/json'
-            }
-        })
-            .then(res => res.json())
-            .then(data => {
-                setReservations(data.reservations || []);
-                setLoading(false);
-            })
-            .catch(err => {
-                console.error(err);
-                setLoading(false);
-            });
-    }, [user]);
-
-    if (loading) return <div>Loading...</div>;
-
-    return (
-        <div>
-            <h2>Dashboard</h2>
-            {reservations.length === 0 ? (
-                <p>No reservations found.</p>
-            ) : (
-                <ul>
-                    {reservations.map(r => (
-                        <li key={r.id}>{r.parking_space?.lot?.name} - {r.status}</li>
-                    ))}
-                </ul>
-            )}
-        </div>
-    );
-};
-export default DriverDashboard;
+import {Link} from 'react-router-dom';
+import {useAuth} from '../../context/AuthContext';
+import {useData,Notice,Panel} from '../../components/DataUI';
+export default function Dashboard(){
+ const {user}=useAuth(),state=useData(`/users/${user.id}/reservations`),rows=state.data?.reservations||[];
+ return <Panel title={`Welcome, ${user.name}`}><Notice {...state}/><p>{rows.length} reservations · {rows.filter(r=>r.status==='Active').length} active sessions · {rows.filter(r=>r.payment_status!=='Paid'&&!['Cancelled','Expired'].includes(r.status)).length} unpaid bookings</p>
+ <div className="d-flex gap-3 flex-wrap"><Link className="btn btn-primary" to="/driver/search">Find parking</Link><Link className="btn btn-outline-info" to="/driver/profile">Manage vehicles</Link><Link className="btn btn-outline-info" to="/driver/reservations">My reservations</Link></div></Panel>;
+}

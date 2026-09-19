@@ -26,9 +26,9 @@ const Layout = ({ children, role }) => {
     };
 
     return (
-        <div className="d-flex">
+        <div className="d-flex app-shell">
             <Sidebar role={role} onLogout={logout} />
-            <div className="flex-grow-1" style={{ minHeight: '100vh', background: '#121212' }}>
+            <div className="flex-grow-1" style={{ minWidth: 0, minHeight: '100vh', background: '#121212' }}>
                 <TopBar title={getTitle()} role={role} />
                 <div className="p-4">
                     {children}
