@@ -14,13 +14,16 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('user_id')
                 ->constrained('users')
-                ->onDelete('cascade');
+                ->onDelete('cascade')
+                ->oneUpdate('cascade');
             $table->foreignId('vehicle_id')
                 ->constrained('vehicles')
-                ->onDelete('cascade');
+                ->onDelete('cascade')
+                ->oneUpdate('cascade');
             $table->foreignId('space_id')
                 ->constrained('parking_spaces')
-                ->onDelete('cascade');
+                ->onDelete('cascade')
+                ->oneUpdate('cascade');
             $table->date('reservation_date');
             $table->time('start_time');
             $table->time('end_time');

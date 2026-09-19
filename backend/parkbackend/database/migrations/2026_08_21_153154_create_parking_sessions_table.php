@@ -15,13 +15,16 @@ return new class extends Migration {
             $table->foreignId('reservation_id')
                 ->nullable()
                 ->constrained('reservations')
-                ->onDelete('set null');
+                ->onDelete('set null')
+                ->oneUpdate('cascade');
             $table->foreignId('vehicle_id')
                 ->constrained('vehicles')
-                ->onDelete('cascade');
+                ->onDelete('cascade')
+                ->oneUpdate('cascade');
             $table->foreignId('space_id')
                 ->constrained('parking_spaces')
-                ->onDelete('cascade');
+                ->onDelete('cascade')
+                ->oneUpdate('cascade');
             $table->timestamp('entry_time');
             $table->timestamp('exit_time')->nullable();
             $table->integer('duration_minutes')->nullable();

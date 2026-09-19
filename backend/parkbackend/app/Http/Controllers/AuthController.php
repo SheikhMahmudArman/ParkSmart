@@ -5,84 +5,37 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    // Register new user
     public function register(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6|confirmed',
-            'role' => 'required|in:driver,staff,admin'
-        ]);
+        $d = $request->validate(['name' => 'required|string|max:255', 'email' => 'required|email|max:255|unique:users,email', 'password' => 'required|string|min:8|confirmed']);
+        $user = User::create(['name' => $d['name'], 'email' => $d['email'], 'password' => Hash::make($d['password']), 'role' => 'driver']);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role' => $validated['role']
-        ]);
-
-        return response()->json([
-            'message' => 'User registered successfully',
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
-            ]
-        ], 201);
+        return response()->json(['message' => 'Account created. Please sign in.', 'user' => $user], 201);
     }
 
-    // Login
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        $user = User::where('email', $credentials['email'])->first();
-
-        if (!$user || !Hash::check($credentials['password'], $user->password)) {
-            return response()->json([
-                'message' => 'Invalid email or password'
-            ], 401);
+        $d = $request->validate(['email' => 'required|email', 'password' => 'required|string']);
+        $user = User::where('email', $d['email'])->first();
+        if (!$user || !Hash::check($d['password'], $user->password)) {
+            return response()->json(['message' => 'Invalid email or password'], 401);
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'Login successful',
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
-            ],
-            'token' => $token,
-            'token_type' => 'Bearer',
-        ], 200);
+        return ['user' => $user, 'token' => $user->createToken('parksmart', ['*'], now()->addDays(7))->plainTextToken];
     }
 
-    // Logout
-    public function logout(Request $request)
-    {
-        $request->user()->currentAccessToken()->delete();
-
-        return response()->json([
-            'message' => 'Logged out successfully'
-        ], 200);
-    }
-
-    // Get authenticated user
     public function user(Request $request)
     {
-        return response()->json([
-            'user' => $request->user()
-        ], 200);
+        return ['user' => $request->user()];
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()?->delete();
+
+        return ['message' => 'Signed out'];
     }
 }

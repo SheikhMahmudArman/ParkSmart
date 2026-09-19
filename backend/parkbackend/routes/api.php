@@ -1,89 +1,58 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\AuthController as Auth;
+use App\Http\Controllers\ParkSmartController as Api;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ReservationController;
-use App\Http\Controllers\ParkingController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\LotController;
-use App\Http\Controllers\StatsController;
 
-// ==================== PUBLIC ROUTES ====================
-Route::post('/test-register', function () {
-    return response()->json([
-        'message' => 'API is working'
-    ]);
-});
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::get('/stats', [StatsController::class, 'index']);
-Route::get('/revenue-by-lot', [StatsController::class, 'revenueByLot']);
-// ==================== PROTECTED ROUTES (require authentication) ====================
+Route::post('register', [Auth::class, 'register'])->middleware('throttle:10,1');
+Route::post('login', [Auth::class, 'login'])->middleware('throttle:10,1');
+Route::get('stats', [Api::class, 'stats']);
+Route::get('revenue-by-lot', [Api::class, 'revenueByLot']); // Public aggregate for existing landing page.
 Route::middleware('auth:sanctum')->group(function () {
-
-    // ---------- AUTH ----------
-    Route::get('/user', [AuthController::class, 'user']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-
-    // ---------- USERS (Admin only) ----------
-    Route::get('/users', [UserController::class, 'index']);
-    Route::get('/users/{id}', [UserController::class, 'show']);
-    Route::put('/users/{id}', [UserController::class, 'update']);
-    Route::delete('/users/{id}', [UserController::class, 'destroy']);
-
-    // ---------- USER VEHICLES (Driver) ----------
-    Route::get('/users/{id}/vehicles', [UserController::class, 'userVehicles']);
-
-    // ---------- USER NOTIFICATIONS (Driver) ----------
-    Route::get('/users/{id}/notifications', [UserController::class, 'notifications']);
-
-    // ---------- STAFF (Admin only) ----------
-    Route::get('/staff', [UserController::class, 'staff']);
-    Route::post('/staff', [UserController::class, 'storeStaff']);
-    Route::put('/staff/{id}', [UserController::class, 'updateStaff']);
-    Route::delete('/staff/{id}', [UserController::class, 'destroyStaff']);
-
-    // ---------- PARKING LOTS ----------
-    Route::get('/lots', [LotController::class, 'index']);
-    Route::get('/lots/{id}', [LotController::class, 'show']);
-    Route::post('/lots', [LotController::class, 'store']);
-    Route::put('/lots/{id}', [LotController::class, 'update']);
-    Route::delete('/lots/{id}', [LotController::class, 'destroy']);
-
-    // ---------- PARKING SPOTS ----------
-    Route::get('/spots', [ParkingController::class, 'spots']);
-    Route::post('/spots', [ParkingController::class, 'storeSpot']);
-    Route::put('/spots/{id}', [ParkingController::class, 'updateSpot']);
-    Route::delete('/spots/{id}', [ParkingController::class, 'destroySpot']);
-
-    // ---------- RESERVATIONS ----------
-    Route::get('/reservations', [ReservationController::class, 'index']); // Staff & Admin
-    Route::post('/reservations', [ReservationController::class, 'store']); // Driver
-    Route::get('/reservations/{id}', [ReservationController::class, 'show']);
-    Route::put('/reservations/{id}', [ReservationController::class, 'update']); // Staff
-    Route::delete('/reservations/{id}', [ReservationController::class, 'destroy']); // Cancel
-
-    // ---------- USER RESERVATIONS ----------
-    Route::get('/users/{id}/reservations', [ReservationController::class, 'userReservations']);
-
-    // ---------- PARKING SESSIONS (Staff) ----------
-    Route::get('/sessions/active', [ParkingController::class, 'activeSessions']);
-    Route::post('/sessions/entry', [ParkingController::class, 'entrySession']);
-    Route::post('/sessions/{id}/exit', [ParkingController::class, 'exitSession']);
-
-    // ---------- PAYMENTS ----------
-    Route::get('/payments', [ParkingController::class, 'allPayments']); // Admin
-    Route::get('/users/{id}/payments', [ParkingController::class, 'userPayments']); // Driver
-    Route::post('/reservations/{id}/pay', [ParkingController::class, 'processPayment']); // Driver
-
-    // ---------- FINDS (Driver & Staff) ----------
-    Route::get('/users/{id}/finds', [ParkingController::class, 'userFinds']);
-    Route::get('/finds/overdue', [ParkingController::class, 'overdueFinds']);
-    Route::post('/finds/{id}/pay', [ParkingController::class, 'payFind']);
-
-    // ---------- REPORTS (Admin) ----------
-    Route::get('/reports/revenue', [ParkingController::class, 'revenueReport']);
-    Route::get('/reports/reservations-by-lot', [StatsController::class, 'reservationsByLot']);
-    Route::get('/reports/spending-by-driver', [StatsController::class, 'spendingByDriver']);
+    Route::get('user', [Auth::class, 'user']);
+    Route::post('logout', [Auth::class, 'logout']);
+    Route::get('lots', [Api::class, 'lots']);
+    Route::get('lots/{id}', [Api::class, 'lot']);
+    Route::get('users/{id}', [Api::class, 'user'])->whereNumber('id');
+    Route::put('users/{id}', [Api::class, 'updateUser']);
+    Route::get('users/{id}/vehicles', [Api::class, 'vehicles']);
+    Route::post('users/{id}/vehicles', [Api::class, 'addVehicle']);
+    Route::delete('vehicles/{id}', [Api::class, 'deleteVehicle']);
+    Route::get('users/{id}/notifications', [Api::class, 'notifications']);
+    Route::get('users/{id}/reservations', [Api::class, 'userReservations']);
+    Route::get('users/{id}/payments', [Api::class, 'userPayments']);
+    Route::get('users/{id}/finds', [Api::class, 'fines']);
+    Route::get('reservations/{id}', [Api::class, 'reservation']);
+    Route::delete('reservations/{id}', [Api::class, 'cancel'])->middleware('role:driver,admin');
+    Route::post('reservations/{id}/pay', [Api::class, 'pay'])->middleware('role:driver,admin');
+    Route::post('finds/{id}/pay', [Api::class, 'payFine'])->middleware('role:driver,admin');
+    Route::post('reservations', [Api::class, 'reserve'])->middleware('role:driver');
+    Route::middleware('role:staff,admin')->group(function () {
+        Route::get('reservations', [Api::class, 'reservations']);
+        Route::put('reservations/{id}', [Api::class, 'updateReservation']);
+        Route::get('spots', [Api::class, 'spots']);
+        Route::put('spots/{id}', [Api::class, 'updateSpot']);
+        Route::get('sessions/active', [Api::class, 'sessions']);
+        Route::post('sessions/entry', [Api::class, 'entry']);
+        Route::post('sessions/{id}/exit', [Api::class, 'exitSession']);
+        Route::get('finds/overdue', [Api::class, 'overdue']);
+    });
+    Route::middleware('role:admin')->group(function () {
+        Route::get('users', [Api::class, 'users']);
+        Route::post('users', [Api::class, 'createUser']);
+        Route::delete('users/{id}', [Api::class, 'deleteUser']);
+        Route::get('staff', [Api::class, 'staff']);
+        Route::post('staff', [Api::class, 'createUser']);
+        Route::put('staff/{id}', [Api::class, 'updateUser']);
+        Route::delete('staff/{id}', [Api::class, 'deleteUser']);
+        Route::post('lots', [Api::class, 'createLot']);
+        Route::put('lots/{id}', [Api::class, 'updateLot']);
+        Route::delete('lots/{id}', [Api::class, 'deleteLot']);
+        Route::post('spots', [Api::class, 'createSpot']);
+        Route::delete('spots/{id}', [Api::class, 'deleteSpot']);
+        Route::get('payments', [Api::class, 'payments']);
+        Route::get('reports/revenue', [Api::class, 'reports']);
+        Route::get('reports/reservations-by-lot', [Api::class, 'reservationsByLot']);
+        Route::get('reports/spending-by-driver', [Api::class, 'spendingByDriver']);
+    });
 });

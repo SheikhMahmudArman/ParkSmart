@@ -65,7 +65,7 @@ class StatsController extends Controller
     {
         $results = DB::select("
             SELECT
-                users.name AS driver_name,
+                users.name AS driver_nam4ve,
                 COUNT(payments.id) AS total_payments,
                 SUM(payments.amount) AS total_spent
             FROM users
