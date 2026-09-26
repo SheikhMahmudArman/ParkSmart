@@ -106,8 +106,22 @@ class ParkSmartController extends Controller
         abort_if((int) $id === request()->user()->id, 422, 'You cannot delete your own account');
         Sql::locked(function () use ($id) {
             $this->row('SELECT id FROM users WHERE id=?', [$id]);
-            abort_if(DB::selectOne('SELECT id FROM vehicles WHERE user_id=? LIMIT 1', [$id]), 409, 'Remove unused vehicles first; accounts with parking history are retained');
-            DB::delete('DELETE FROM personal_access_tokens WHERE tokenable_id=? AND tokenable_type=?', [$id, User::class]);
+            abort_if(DB::selectOne('SELECT id
+                FROM
+                 vehicles
+                    WHERE
+                    user_id = ?
+                        LIMIT
+                     1 ', [$id]), 409, ' Remove unused vehicles first;
+
+
+                        accounts
+                        WITH
+                        parking history ARE retained');
+            DB::delete('DELETE FROM personal_access_tokens
+                    WHERE
+                        tokenable_id = ?
+                         AND tokenable_type = ?', [$id, User::class]);
             DB::delete('DELETE FROM users WHERE id=?', [$id]);
         });
 
