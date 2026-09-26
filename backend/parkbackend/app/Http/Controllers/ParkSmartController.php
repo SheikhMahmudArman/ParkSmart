@@ -13,11 +13,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class ParkSmartController extends Controller
-
 {
 
     private function row(string $sql, array $args = []): object
-
     {
 
         $row = DB::selectOne($sql, $args);
@@ -29,7 +27,6 @@ class ParkSmartController extends Controller
     }
 
     private function owner(int $id): void
-
     {
 
         abort_unless(request()->user()->role === 'admin' || request()->user()->id === $id, 403, 'Access denied');
@@ -37,7 +34,6 @@ class ParkSmartController extends Controller
     }
 
     private function booking(int $id): object
-
     {
 
         $r = $this->row('SELECT *
@@ -55,7 +51,6 @@ WHERE id = ?', [$id]);
     }
 
     private function method(Request $request): string
-
     {
 
         $data = $request->validate(['payment_method' => 'required|in:Demo,Cash']);
@@ -65,7 +60,6 @@ WHERE id = ?', [$id]);
     }
 
     public function users()
-
     {
 
         return DB::select('SELECT
@@ -81,7 +75,6 @@ ORDER BY id DESC');
     }
 
     public function staff()
-
     {
 
         return DB::select("SELECT
@@ -98,7 +91,6 @@ ORDER BY id DESC");
     }
 
     public function user($id)
-
     {
 
         $this->owner((int) $id);
@@ -116,7 +108,6 @@ WHERE id = ?', [$id]));
     }
 
     public function createUser(Request $request)
-
     {
 
         $d = $request->validate([
@@ -148,7 +139,6 @@ WHERE id = ?', [$id]));
     }
 
     public function updateUser(Request $request, $id)
-
     {
 
         $this->owner((int) $id);
@@ -160,8 +150,8 @@ WHERE id = ?', [$id]));
     phone,
     role,
     assigned_lot
-FROM users
-WHERE id = ?', [$id]);
+    FROM users
+    WHERE id = ?', [$id]);
 
         $d = $request->validate([
 
@@ -186,14 +176,14 @@ WHERE id = ?', [$id]);
             DB::update(
 
                 'UPDATE users
-SET
+    SET
     name = ?,
     email = ?,
     phone = ?,
     role = ?,
     assigned_lot = ?,
     updated_at = NOW()
-WHERE id = ?',
+    WHERE id = ?',
 
                 [$d['name'], $d['email'], array_key_exists('phone', $d) ? $d['phone'] : $old->phone, $role, array_key_exists('assigned_lot', $d) ? $d['assigned_lot'] : $old->assigned_lot, $id]
 
@@ -202,26 +192,28 @@ WHERE id = ?',
             if ($role !== $old->role) {
 
                 DB::delete('DELETE FROM personal_access_tokens
-WHERE tokenable_id = ?
+    WHERE tokenable_id = ?
     AND tokenable_type = ?', [$id, User::class]);
 
             }
 
         });
 
-        return response()->json(['message' => 'Profile saved', 'user' => $this->row('SELECT
+        return response()->json([
+            'message' => 'Profile saved',
+            'user' => $this->row('SELECT
     id,
     name,
     email,
     phone,
     role
-FROM users
-WHERE id = ?', [$id])]);
+    FROM users
+    WHERE id = ?', [$id])
+        ]);
 
     }
 
     public function deleteUser($id)
-
     {
 
         abort_if((int) $id === request()->user()->id, 422, 'You cannot delete your own account');
@@ -250,20 +242,18 @@ WHERE id = ?', [$id]);
     }
 
     public function vehicles($id)
-
     {
 
         $this->owner((int) $id);
 
         return DB::select('SELECT *
-FROM vehicles
-WHERE user_id = ?
-ORDER BY id', [$id]);
+        FROM vehicles
+        WHERE user_id = ?
+        ORDER BY id', [$id]);
 
     }
 
     public function addVehicle(Request $request, $id)
-
     {
 
         $this->owner((int) $id);
@@ -285,25 +275,24 @@ ORDER BY id', [$id]);
     }
 
     public function deleteVehicle($id)
-
     {
 
         Sql::locked(function () use ($id) {
 
             $v = $this->row('SELECT *
-FROM vehicles
-WHERE id = ?', [$id]);
+    FROM vehicles
+    WHERE id = ?', [$id]);
 
             $this->owner((int) $v->user_id);
 
             abort_if(DB::selectOne('SELECT id
-FROM reservations
-WHERE vehicle_id = ? LIMIT 1', [$id]) || DB::selectOne('SELECT id
-FROM parking_sessions
-WHERE vehicle_id = ? LIMIT 1', [$id]), 409, 'Vehicle has parking history and cannot be deleted');
+    FROM reservations
+    WHERE vehicle_id = ? LIMIT 1', [$id]) || DB::selectOne('SELECT id
+    FROM parking_sessions
+    WHERE vehicle_id = ? LIMIT 1', [$id]), 409, 'Vehicle has parking history and cannot be deleted');
 
             DB::delete('DELETE FROM vehicles
-WHERE id = ?', [$id]);
+    WHERE id = ?', [$id]);
 
         });
 
@@ -312,7 +301,6 @@ WHERE id = ?', [$id]);
     }
 
     public function lots()
-
     {
 
         $rows = DB::select('SELECT *
@@ -330,7 +318,6 @@ ORDER BY id');
     }
 
     public function lot($id)
-
     {
 
         $row = $this->row('SELECT *
@@ -344,7 +331,6 @@ WHERE id = ?', [$id]);
     }
 
     public function createLot(Request $request)
-
     {
 
         $d = $request->validate([
@@ -372,7 +358,6 @@ WHERE id = ?', [$id]);
     }
 
     public function updateLot(Request $request, $id)
-
     {
 
         $d = $request->validate([
@@ -420,7 +405,6 @@ WHERE id = ?',
     }
 
     public function deleteLot($id)
-
     {
 
         Sql::locked(function () use ($id) {
@@ -449,7 +433,6 @@ WHERE id = ?', [$id]);
     }
 
     public function spots()
-
     {
 
         return DB::select('SELECT
@@ -464,7 +447,6 @@ ORDER BY l.id, s.id');
     }
 
     public function createSpot(Request $request)
-
     {
 
         $d = $request->validate(['parking_lot_id' => 'required|exists:parking_lots,id', 'space_number' => 'required|string|max:20', 'type' => 'required|string|max:50']);
@@ -485,7 +467,6 @@ WHERE parking_lot_id = ?
     }
 
     public function updateSpot(Request $request, $id)
-
     {
 
         $d = $request->validate(['status' => 'required|in:Available,Maintenance']);
@@ -520,7 +501,6 @@ WHERE id = ?', [$d['status'], $id]);
     }
 
     public function deleteSpot($id)
-
     {
 
         Sql::locked(function () use ($id) {
@@ -545,7 +525,6 @@ WHERE id = ?', [$id]);
     }
 
     private function reservationRows(?int $user = null): array
-
     {
 
         return DB::select('SELECT
@@ -568,7 +547,6 @@ JOIN users u ON u.id = r.user_id ' .
     }
 
     public function reservations()
-
     {
 
         return $this->reservationRows();
@@ -576,7 +554,6 @@ JOIN users u ON u.id = r.user_id ' .
     }
 
     public function userReservations($id)
-
     {
 
         $this->owner((int) $id);
@@ -586,7 +563,6 @@ JOIN users u ON u.id = r.user_id ' .
     }
 
     public function reservation($id)
-
     {
 
         return ['reservation' => $this->booking((int) $id)];
@@ -594,7 +570,6 @@ JOIN users u ON u.id = r.user_id ' .
     }
 
     public function reserve(Request $request)
-
     {
 
         $d = $request->validate([
@@ -618,7 +593,6 @@ JOIN users u ON u.id = r.user_id ' .
     }
 
     public function updateReservation(Request $request, $id)
-
     {
 
         $this->booking((int) $id);
@@ -630,7 +604,6 @@ JOIN users u ON u.id = r.user_id ' .
     }
 
     public function cancel($id)
-
     {
 
         $this->booking((int) $id);
@@ -642,7 +615,6 @@ JOIN users u ON u.id = r.user_id ' .
     }
 
     public function pay(Request $request, $id)
-
     {
 
         $this->booking((int) $id);
@@ -654,7 +626,6 @@ JOIN users u ON u.id = r.user_id ' .
     }
 
     public function sessions()
-
     {
 
         return DB::select('SELECT
@@ -672,7 +643,6 @@ ORDER BY se.entry_time');
     }
 
     public function entry(Request $request)
-
     {
 
         $d = $request->validate(['plate_number' => 'required|string|max:20', 'lot_id' => 'required|integer', 'space_number' => 'required|string|max:20']);
@@ -682,7 +652,6 @@ ORDER BY se.entry_time');
     }
 
     public function exitSession($id)
-
     {
 
         return response()->json(Sql::call('sp_exit', [$id])[0]);
@@ -690,7 +659,6 @@ ORDER BY se.entry_time');
     }
 
     public function payments()
-
     {
 
         return DB::select('SELECT *
@@ -700,7 +668,6 @@ ORDER BY id DESC');
     }
 
     public function userPayments($id)
-
     {
 
         $this->owner((int) $id);
@@ -713,7 +680,6 @@ ORDER BY id DESC', [$id]);
     }
 
     public function fines($id)
-
     {
 
         $this->owner((int) $id);
@@ -732,7 +698,6 @@ ORDER BY f.id DESC', [$id]);
     }
 
     public function payFine(Request $request, $id)
-
     {
 
         $f = $this->row('SELECT COALESCE(r.user_id, v.user_id) AS user_id
@@ -752,7 +717,6 @@ WHERE f.id = ?', [$id]);
     }
 
     public function overdue()
-
     {
 
         return DB::select("SELECT *
@@ -763,7 +727,6 @@ WHERE status = 'Pending'
     }
 
     public function notifications($id)
-
     {
 
         $this->owner((int) $id);
@@ -780,7 +743,6 @@ ORDER BY a.id DESC LIMIT 50", [$id]);
     }
 
     public function stats()
-
     {
 
         return response()->json(DB::selectOne("SELECT (SELECT COUNT(*)
@@ -792,7 +754,6 @@ WHERE status = 'Completed') AS total_revenue"));
     }
 
     public function revenueByLot()
-
     {
 
         return DB::select('SELECT *
@@ -802,7 +763,6 @@ ORDER BY total_revenue DESC');
     }
 
     public function reports()
-
     {
 
         $stats = DB::selectOne("SELECT (SELECT COUNT(*)
@@ -832,7 +792,6 @@ FROM v_revenue_by_lot')
     }
 
     public function reservationsByLot()
-
     {
 
         return DB::select('SELECT l.name AS lot_name, COUNT(r.id) AS total_reservations
@@ -846,7 +805,6 @@ GROUP BY l.id, l.name');
     }
 
     public function spendingByDriver()
-
     {
 
         return DB::select("SELECT
