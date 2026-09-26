@@ -16,16 +16,34 @@ ON s.parking_lot_id=l.id
 GROUP BY l.id,l.name,l.location,l.description,l.contact,l.opens_at,l.closes_at,l.hourly_rate,l.created_at;
 -----------------------------------
 
-
+--------------------------MAIMOONA--------------------------
 CREATE VIEW v_reservation_details AS
-SELECT r.*, u.name AS user_name, u.email, v.plate_number,
- s.space_number,s.type,l.id AS lot_id,l.name AS lot_name,l.location,
- ps.id AS session_id,ps.entry_time,ps.exit_time,ps.duration_minutes
-FROM reservations r JOIN users u ON u.id=r.user_id
-JOIN vehicles v ON v.id=r.vehicle_id JOIN parking_spaces s ON s.id=r.space_id
-JOIN parking_lots l ON l.id=s.parking_lot_id
-LEFT JOIN parking_sessions ps ON ps.reservation_id=r.id;
-
+SELECT
+    r.*,
+    u.name AS user_name,
+    u.email,
+    v.plate_number,
+    s.space_number,
+    s.type,
+    l.id AS lot_id,
+    l.name AS lot_name,
+    l.location,
+    ps.id AS session_id,
+    ps.entry_time,
+    ps.exit_time,
+    ps.duration_minutes
+FROM reservations r
+JOIN users u
+    ON u.id = r.user_id
+JOIN vehicles v
+    ON v.id = r.vehicle_id
+JOIN parking_spaces s
+    ON s.id = r.space_id
+JOIN parking_lots l
+    ON l.id = s.parking_lot_id
+LEFT JOIN parking_sessions ps
+    ON ps.reservation_id = r.id;
+----------------------------------------------------
 
 ------------jemi ----------------
 CREATE VIEW v_revenue_by_lot AS

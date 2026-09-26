@@ -36,9 +36,14 @@ BEGIN
 END$$
 -----------------------------------
 
+--------------------MAIMOONA--------------------------
 CREATE PROCEDURE sp_expire_reservations()
 BEGIN
- UPDATE reservations SET status='Expired'
- WHERE status IN ('Pending','Confirmed') AND end_at<=NOW();
+    UPDATE reservations
+    SET status = 'Expired'
+    WHERE status IN ('Pending', 'Confirmed')
+      AND end_at <= NOW();
 END$$
+----------------------------------------------------
+
 DELIMITER ;
