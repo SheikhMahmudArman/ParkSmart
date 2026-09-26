@@ -67,54 +67,80 @@ CREATE TABLE `vehicles` (
   CONSTRAINT `vehicles_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+---------------------------------MAIMOONA---------------------------------
 CREATE TABLE `reservations` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint(20) unsigned NOT NULL,
-  `vehicle_id` bigint(20) unsigned NOT NULL,
-  `space_id` bigint(20) unsigned NOT NULL,
-  `reservation_date` date NOT NULL,
-  `start_time` time NOT NULL,
-  `end_time` time NOT NULL,
-  `status` varchar(20) NOT NULL DEFAULT 'Pending',
-  `payment_status` varchar(20) NOT NULL DEFAULT 'Pending',
-  `total_amount` decimal(10,2) DEFAULT NULL,
-  `reservation_time` timestamp NULL DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `reservations_vehicle_id_foreign` (`vehicle_id`),
-  KEY `reservations_space_id_foreign` (`space_id`),
-  KEY `reservations_user_id_index` (`user_id`),
-  KEY `reservations_status_index` (`status`),
-  KEY `reservations_payment_status_index` (`payment_status`),
-  KEY `reservations_reservation_date_index` (`reservation_date`),
-  CONSTRAINT `reservations_space_id_foreign` FOREIGN KEY (`space_id`) REFERENCES `parking_spaces` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `reservations_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `reservations_vehicle_id_foreign` FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    `user_id` bigint(20) unsigned NOT NULL,
+    `vehicle_id` bigint(20) unsigned NOT NULL,
+    `space_id` bigint(20) unsigned NOT NULL,
+    `reservation_date` date NOT NULL,
+    `start_time` time NOT NULL,
+    `end_time` time NOT NULL,
+    `status` varchar(20) NOT NULL DEFAULT 'Pending',
+    `payment_status` varchar(20) NOT NULL DEFAULT 'Pending',
+    `total_amount` decimal(10,2) DEFAULT NULL,
+    `reservation_time` timestamp NULL DEFAULT NULL,
+    `created_at` timestamp NULL DEFAULT NULL,
+    `updated_at` timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    KEY `reservations_vehicle_id_foreign` (`vehicle_id`),
+    KEY `reservations_space_id_foreign` (`space_id`),
+    KEY `reservations_user_id_index` (`user_id`),
+    KEY `reservations_status_index` (`status`),
+    KEY `reservations_payment_status_index` (`payment_status`),
+    KEY `reservations_reservation_date_index` (`reservation_date`),
+    CONSTRAINT `reservations_space_id_foreign`
+        FOREIGN KEY (`space_id`)
+        REFERENCES `parking_spaces` (`id`)
+        ON DELETE CASCADE,
+    CONSTRAINT `reservations_user_id_foreign`
+        FOREIGN KEY (`user_id`)
+        REFERENCES `users` (`id`)
+        ON DELETE CASCADE,
+    CONSTRAINT `reservations_vehicle_id_foreign`
+        FOREIGN KEY (`vehicle_id`)
+        REFERENCES `vehicles` (`id`)
+        ON DELETE CASCADE
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+------------------------------------------------------------------
 
+---------------------------------MAIMOONA---------------------------------
 CREATE TABLE `parking_sessions` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `reservation_id` bigint(20) unsigned DEFAULT NULL,
-  `vehicle_id` bigint(20) unsigned NOT NULL,
-  `space_id` bigint(20) unsigned NOT NULL,
-  `entry_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `exit_time` timestamp NULL DEFAULT NULL,
-  `duration_minutes` int(11) DEFAULT NULL,
-  `hourly_rate` decimal(10,2) NOT NULL DEFAULT 5.00,
-  `total_cost` decimal(10,2) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `parking_sessions_reservation_id_foreign` (`reservation_id`),
-  KEY `parking_sessions_space_id_foreign` (`space_id`),
-  KEY `parking_sessions_entry_time_index` (`entry_time`),
-  KEY `parking_sessions_exit_time_index` (`exit_time`),
-  KEY `parking_sessions_vehicle_id_index` (`vehicle_id`),
-  CONSTRAINT `parking_sessions_reservation_id_foreign` FOREIGN KEY (`reservation_id`) REFERENCES `reservations` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `parking_sessions_space_id_foreign` FOREIGN KEY (`space_id`) REFERENCES `parking_spaces` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `parking_sessions_vehicle_id_foreign` FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    `reservation_id` bigint(20) unsigned DEFAULT NULL,
+    `vehicle_id` bigint(20) unsigned NOT NULL,
+    `space_id` bigint(20) unsigned NOT NULL,
+    `entry_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+    `exit_time` timestamp NULL DEFAULT NULL,
+    `duration_minutes` int(11) DEFAULT NULL,
+    `hourly_rate` decimal(10,2) NOT NULL DEFAULT 5.00,
+    `total_cost` decimal(10,2) DEFAULT NULL,
+    `created_at` timestamp NULL DEFAULT NULL,
+    `updated_at` timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    KEY `parking_sessions_reservation_id_foreign` (`reservation_id`),
+    KEY `parking_sessions_space_id_foreign` (`space_id`),
+    KEY `parking_sessions_entry_time_index` (`entry_time`),
+    KEY `parking_sessions_exit_time_index` (`exit_time`),
+    KEY `parking_sessions_vehicle_id_index` (`vehicle_id`),
+    CONSTRAINT `parking_sessions_reservation_id_foreign`
+        FOREIGN KEY (`reservation_id`)
+        REFERENCES `reservations` (`id`)
+        ON DELETE SET NULL,
+    CONSTRAINT `parking_sessions_space_id_foreign`
+        FOREIGN KEY (`space_id`)
+        REFERENCES `parking_spaces` (`id`)
+        ON DELETE CASCADE,
+    CONSTRAINT `parking_sessions_vehicle_id_foreign`
+        FOREIGN KEY (`vehicle_id`)
+        REFERENCES `vehicles` (`id`)
+        ON DELETE CASCADE
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+------------------------------------------------------------------
 
 CREATE TABLE `payments` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -177,18 +203,26 @@ CREATE TABLE `feedbacks` (
   CONSTRAINT `feedbacks_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+-----------------------------MAIMOONA-----------------------------
 CREATE TABLE `employees` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
-  `shift` varchar(50) NOT NULL,
-  `lot_id` bigint(20) unsigned NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `employees_lot_id_foreign` (`lot_id`),
-  KEY `employees_shift_index` (`shift`),
-  CONSTRAINT `employees_lot_id_foreign` FOREIGN KEY (`lot_id`) REFERENCES `parking_lots` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    `name` varchar(100) NOT NULL,
+    `shift` varchar(50) NOT NULL,
+    `lot_id` bigint(20) unsigned NOT NULL,
+    `created_at` timestamp NULL DEFAULT NULL,
+    `updated_at` timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    KEY `employees_lot_id_foreign` (`lot_id`),
+    KEY `employees_shift_index` (`shift`),
+    CONSTRAINT `employees_lot_id_foreign`
+        FOREIGN KEY (`lot_id`)
+        REFERENCES `parking_lots` (`id`)
+        ON DELETE CASCADE
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+----------------------------------------------------------
 
 CREATE TABLE `personal_access_tokens` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
