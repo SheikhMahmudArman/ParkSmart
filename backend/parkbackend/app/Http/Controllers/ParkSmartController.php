@@ -78,7 +78,9 @@ class ParkSmartController extends Controller
     public function updateUser(Request $request, $id)
     {
         $this->owner((int) $id);
-        $old = $this->row('SELECT id,name,email,phone,role,assigned_lot FROM users WHERE id=?', [$id]);
+        $old = $this->row('SELECT id,name,email,phone,role,assigned_lot FROMusers
+                            WHERE
+                            id = ?', [$id]);
         $d = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $old->id,
