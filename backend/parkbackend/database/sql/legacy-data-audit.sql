@@ -18,9 +18,21 @@ WHERE r1.status IN ('Pending','Confirmed','Active') AND r2.status IN ('Pending',
 SELECT r.id,r.user_id,v.user_id AS vehicle_owner
 FROM reservations r JOIN vehicles v ON v.id=r.vehicle_id WHERE r.user_id<>v.user_id;
 
-SELECT reservation_id,COUNT(*) AS payment_count
-FROM payments WHERE reservation_id IS NOT NULL AND status='Completed'
- AND id NOT IN (SELECT payment_id FROM finds WHERE payment_id IS NOT NULL)
-GROUP BY reservation_id HAVING COUNT(*)>1;
 
-SELECT id,name,features FROM parking_lots WHERE JSON_TYPE(features)<>'ARRAY';
+------------jemi------------------
+SELECT 
+    reservation_id,
+    COUNT(*) AS payment_count
+FROM payments 
+WHERE reservation_id IS NOT NULL 
+    AND status='Completed'
+    AND id NOT IN (SELECT payment_id FROM finds WHERE payment_id IS NOT NULL)
+GROUP BY reservation_id 
+HAVING COUNT(*)>1;
+
+SELECT 
+    id,
+    name,
+    features 
+FROM parking_lots 
+WHERE JSON_TYPE(features)<>'ARRAY';
