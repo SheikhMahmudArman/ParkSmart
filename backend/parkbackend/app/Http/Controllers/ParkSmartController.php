@@ -769,7 +769,7 @@ ORDER BY total_revenue DESC');
 FROM reservations) AS total_reservations, (SELECT COALESCE(SUM(amount), 0)
 FROM payments
 WHERE status = 'Completed'
-    AND payment_date > = DATE_FORMAT(NOW(), '%Y-%m-01')) AS monthly_revenue, (SELECT COALESCE(ROUND(100*SUM(status = 'Occupied')/NULLIF(COUNT(*), 0)), 0)
+    AND payment_date >= DATE_FORMAT(NOW(), '%Y-%m-01')) AS monthly_revenue, (SELECT COALESCE(ROUND(100*SUM(status = 'Occupied')/NULLIF(COUNT(*), 0)), 0)
 FROM parking_spaces) AS occupancy");
 
         return [

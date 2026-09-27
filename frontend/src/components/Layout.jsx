@@ -1,5 +1,6 @@
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
+import Chatbot from './Chatbot';
 import { useAuth } from '../context/AuthContext';
 import { useLocation } from 'react-router-dom';
 
@@ -34,6 +35,7 @@ const Layout = ({ children, role }) => {
                     {children}
                 </div>
             </div>
+            <Chatbot />
         </div>
     );
 };

@@ -2,6 +2,7 @@ import {Link} from 'react-router-dom';
 import {Container,Row,Col,Button} from 'react-bootstrap';
 import {useData,Notice} from '../components/DataUI';
 import {money} from '../api';
+import Chatbot from '../components/Chatbot';
 import '../styles/pages/Landing.css';
 export default function Landing(){
  const stats=useData('/stats'),revenue=useData('/revenue-by-lot');
@@ -24,5 +25,6 @@ export default function Landing(){
  <div className="table-responsive"><table className="table table-dark"><thead><tr><th>Lot</th><th>Payments</th><th>Revenue</th></tr></thead><tbody>{(revenue.data||[]).map((r,i)=><tr key={r.lot_id??i}><td>{r.lot_name}</td><td>{r.total_transactions}</td><td>{money(r.total_revenue)}</td></tr>)}{!revenue.loading&&!revenue.data?.length&&<tr><td colSpan="3">No payments recorded yet.</td></tr>}</tbody></table></div></Container></section>
  <section className="features-section"><Container><h2 className="text-center mb-4">Parking from booking to exit</h2><Row className="g-4">{features.map(f=><Col md={4} key={f.title}><div className="feature-card"><div className="feature-icon"><i className={`bi ${f.icon}`}/></div><h3 className="h5">{f.title}</h3><p>{f.desc}</p></div></Col>)}</Row></Container></section>
  <footer className="landing-footer"><Container>© {new Date().getFullYear()} ParkSmart · Times: Asia/Dhaka · Currency: BDT</Container></footer>
+ <Chatbot />
  </div>;
 }

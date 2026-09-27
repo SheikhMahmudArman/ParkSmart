@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ParkSmart Parking &amp; Reservation Guide</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm 18mm; }
+  :root { --red:#dc3545; --ink:#17202a; --muted:#5d6873; --line:#dfe4e8; --soft:#f5f7f9; --dark:#101820; }
+  * { box-sizing:border-box; }
+  body { margin:0; color:var(--ink); font-family:Arial, Helvetica, sans-serif; font-size:10.5pt; line-height:1.48; }
+  h1,h2,h3,p { margin-top:0; }
+  h2 { color:var(--dark); font-size:16pt; margin:0 0 9px; padding-bottom:5px; border-bottom:2px solid var(--red); }
+  h3 { color:var(--dark); font-size:11.5pt; margin:13px 0 3px; }
+  p { margin-bottom:7px; }
+  ul,ol { margin:4px 0 9px 19px; padding:0; }
+  li { margin:3px 0; }
+  .cover { background:linear-gradient(135deg,#101820 0%,#222b34 100%); color:#fff; min-height:225mm; padding:27mm 18mm 20mm; position:relative; page-break-after:always; overflow:hidden; }
+  .cover:after { content:"P"; position:absolute; right:-15mm; bottom:-30mm; color:#ffffff0d; font-size:240pt; font-weight:800; }
+  .brand { font-size:18pt; font-weight:800; letter-spacing:-.4px; }
+  .brand span { color:#ff6b6b; }
+  .eyebrow { color:#ff9aa3; font-size:9pt; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin:28mm 0 10px; }
+  .cover h1 { font-size:34pt; line-height:1.08; max-width:145mm; margin:0 0 14px; letter-spacing:-1px; }
+  .cover .lead { color:#d8e0e6; font-size:14pt; line-height:1.45; max-width:130mm; }
+  .cover-note { position:absolute; left:18mm; bottom:22mm; color:#aebbc5; font-size:9.5pt; max-width:135mm; }
+  .cover-note strong { color:#fff; }
+  .section { page-break-inside:avoid; margin-bottom:18px; }
+  .intro { background:var(--soft); border-left:4px solid var(--red); padding:11px 13px; margin:0 0 16px; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:11px; }
+  .card { border:1px solid var(--line); border-radius:7px; padding:11px 12px; background:#fff; page-break-inside:avoid; }
+  .card h3 { margin-top:0; }
+  .tag { display:inline-block; color:#9e2531; background:#fdecee; border-radius:20px; padding:2px 8px; font-size:8.5pt; font-weight:700; margin-bottom:5px; }
+  .steps { counter-reset:step; list-style:none; margin-left:0; padding-left:0; }
+  .steps li { counter-increment:step; padding:5px 0 5px 30px; position:relative; }
+  .steps li:before { content:counter(step); position:absolute; left:0; top:4px; width:21px; height:21px; color:#fff; background:var(--red); border-radius:50%; text-align:center; line-height:21px; font-weight:700; }
+  .notice { background:#fff7e6; border:1px solid #f0cf87; padding:9px 11px; border-radius:6px; margin:9px 0; }
+  .notice strong { color:#7b5510; }
+  table { width:100%; border-collapse:collapse; margin:7px 0 10px; font-size:9.5pt; }
+  th { background:var(--dark); color:#fff; text-align:left; padding:7px; }
+  td { border:1px solid var(--line); padding:7px; vertical-align:top; }
+  tr:nth-child(even) td { background:#fafbfc; }
+  .footer { border-top:1px solid var(--line); color:var(--muted); font-size:8.5pt; margin-top:22px; padding-top:8px; }
+  .small { color:var(--muted); font-size:9pt; }
+  .avoid { page-break-inside:avoid; }
+  @media print { a { color:inherit; text-decoration:none; } .section { page-break-inside:auto; } }
+</style>
+</head>
+<body>
+<section class="cover">
+  <div class="brand">Park<span>Smart</span></div>
+  <div class="eyebrow">Customer information guide · 2026 edition</div>
+  <h1>Parking made simpler.</h1>
+  <p class="lead">Find a suitable lot, reserve a space, arrive with confidence, and keep track of your parking from one place.</p>
+  <div class="cover-note"><strong>Quick reference:</strong> Times are shown in Asia/Dhaka. Prices are displayed in Bangladeshi Taka (BDT). Keep your vehicle plate number and reservation details ready when you arrive.</div>
+</section>
+
+<main>
+<section class="section">
+  <div class="intro"><strong>Welcome to ParkSmart.</strong> This guide answers the questions drivers most often ask about searching for parking, making a reservation, arriving at a lot, payments, cancellations, and getting help. It reflects the current ParkSmart service experience.</div>
+  <h2>At a glance</h2>
+  <div class="grid">
+    <div class="card"><span class="tag">Find</span><h3>Search available lots</h3><p>Search by lot name, location, or parking type. Each listing shows current availability, total spaces, features, and the hourly rate.</p></div>
+    <div class="card"><span class="tag">Reserve</span><h3>Book before you travel</h3><p>Select a date, start time, end time, and one of your registered vehicles. ParkSmart assigns an available space in the selected lot.</p></div>
+    <div class="card"><span class="tag">Arrive</span><h3>Use the reserved vehicle</h3><p>Entry is checked against your reservation, vehicle, lot, and booked time. Staff record entry and exit so the space status stays accurate.</p></div>
+    <div class="card"><span class="tag">Manage</span><h3>Keep everything together</h3><p>View reservations, notifications, payment history, vehicles, and any overstay charges from your driver account.</p></div>
+  </div>
+</section>
+
+<section class="section">
+  <h2>How do I make a reservation?</h2>
+  <ol class="steps">
+    <li><strong>Create or sign in to a driver account.</strong> Public registration creates a driver account. Staff and administrator accounts are managed by ParkSmart administrators.</li>
+    <li><strong>Add your vehicle.</strong> Enter the vehicle plate number and, if useful, its make, model, and colour. The vehicle must belong to your account.</li>
+    <li><strong>Find a lot.</strong> Compare location, available spaces, parking type, features, and hourly rate.</li>
+    <li><strong>Choose the time.</strong> Select a future date and a start and end time on the same date. The end time must be after the start time.</li>
+    <li><strong>Review and submit.</strong> The estimated price is calculated from the selected interval and the lot’s hourly rate. Each started hour is billed.</li>
+  </ol>
+  <div class="notice"><strong>Important:</strong> Availability shown in search is a snapshot. A reservation is only confirmed when ParkSmart successfully creates it and displays the reservation in your account.</div>
+</section>
+
+<section class="section">
+  <h2>Pricing and billing</h2>
+  <table>
+    <tr><th>Question</th><th>ParkSmart answer</th></tr>
+    <tr><td>What currency is used?</td><td>Prices are shown in Bangladeshi Taka (BDT).</td></tr>
+    <tr><td>How is a booked price calculated?</td><td>The parking rate is multiplied by the number of started hours in the booked interval. For example, a 1 hour 10 minute booking is billed as 2 hours.</td></tr>
+    <tr><td>Can the final amount change?</td><td>Yes. Leaving after the booked end time can extend the billed period and may create an overstay fine. The final amount is recorded when staff complete the exit.</td></tr>
+    <tr><td>Do I pay twice for an overstay?</td><td>No. The final parking amount includes the booked duration and any applicable extension. Review the payment record and fine details before paying.</td></tr>
+  </table>
+  <p class="small">Rates and lot features can differ by location. Always review the lot details shown at the time of booking.</p>
+</section>
+
+<section class="section">
+  <h2>Arrival, entry, and exit</h2>
+  <div class="grid">
+    <div class="card"><h3>Before you arrive</h3><ul><li>Check the lot location and your reservation date and times.</li><li>Bring the vehicle whose plate number is attached to the reservation.</li><li>Allow enough time to reach the entrance; entry outside the booked interval may be refused.</li></ul></div>
+    <div class="card"><h3>At the entrance</h3><ul><li>Show or provide your reservation details and vehicle plate number to staff.</li><li>Staff verify that the reservation is confirmed, current, and matched to the vehicle.</li><li>Do not occupy a different space unless staff direct you to do so.</li></ul></div>
+    <div class="card"><h3>When leaving</h3><ul><li>Ask staff to record your exit before driving away.</li><li>The system records the session duration and releases the space.</li><li>If you stayed beyond the booked time, check your account for the final amount or an overstay fine.</li></ul></div>
+    <div class="card"><h3>If something is wrong</h3><ul><li>Do not force entry or move barriers.</li><li>Speak with the on-site parking staff immediately.</li><li>Keep photos, timestamps, and your reservation number if you need to report a dispute.</li></ul></div>
+  </div>
+</section>
+
+<section class="section">
+  <h2>Payments and receipts</h2>
+  <p>ParkSmart keeps a payment history linked to your reservation and parking session. Payment records may show the amount, date, method, status, lot, and transaction reference.</p>
+  <div class="notice"><strong>Demonstration notice:</strong> The current ParkSmart application uses demo payments for coursework and testing. No real card or bank payment is processed by the demo payment flow. A production deployment should connect an approved payment provider before accepting real money.</div>
+  <h3>When can I pay?</h3>
+  <p>Depending on the configured workflow, payment is available after the parking session is completed. The amount payable is taken from the ParkSmart record rather than from a client-supplied amount.</p>
+  <h3>Why do I see a fine?</h3>
+  <p>Fines can be created for an overstay or another recorded parking violation. Review the reason and status in your Payment page. If you believe a charge is incorrect, contact the lot staff before making a duplicate payment.</p>
+</section>
+
+<section class="section">
+  <h2>Cancellations, changes, and expired bookings</h2>
+  <ul>
+    <li>Unpaid bookings in a cancellable status can be cancelled from your reservation list.</li>
+    <li>Paid bookings cannot be cancelled through the normal driver flow. A refund or adjustment must be handled by the parking operator.</li>
+    <li>A booking may be marked expired when its unused reservation window has passed.</li>
+    <li>If your plans change, cancel as early as possible so the space can return to availability.</li>
+    <li>ParkSmart does not promise that a cancelled space will remain available for later rebooking.</li>
+  </ul>
+</section>
+
+<section class="section">
+  <h2>Accessibility, safety, and good parking practice</h2>
+  <ul>
+    <li>Use only the space assigned to your reservation and follow signs and staff instructions.</li>
+    <li>Keep drive lanes, pedestrian routes, emergency exits, ramps, and fire equipment clear.</li>
+    <li>Accessible, covered, EV, or other specialist spaces are subject to the facilities listed for the individual lot; confirm suitability with staff before arrival.</li>
+    <li>Do not leave valuables visible in your vehicle. Lock the vehicle and retain your keys.</li>
+    <li>In an emergency, follow the lot’s posted instructions and contact local emergency services. Parking staff can assist with site-related issues but are not emergency responders.</li>
+  </ul>
+</section>
+
+<section class="section">
+  <h2>Account and privacy questions</h2>
+  <div class="grid">
+    <div class="card"><h3>What information is needed?</h3><p>Your account uses your name and email. A phone number is optional. A vehicle plate number is required before you can reserve a space.</p></div>
+    <div class="card"><h3>Can I manage more than one vehicle?</h3><p>Yes. Add vehicles in Profile and select the correct vehicle when making a reservation. Remove a vehicle only when it has no active or future booking.</p></div>
+    <div class="card"><h3>What are the user roles?</h3><p>Drivers make reservations and view their own records. Staff manage reservations and record entry and exit. Administrators manage users, lots, spaces, payments, and reports.</p></div>
+    <div class="card"><h3>Why did I receive an update?</h3><p>Reservation status changes are recorded as notifications so you can follow the booking from creation through confirmation, entry, completion, cancellation, or expiry.</p></div>
+  </div>
+</section>
+
+<section class="section">
+  <h2>Need help?</h2>
+  <p>For an immediate lot issue, speak to the on-site parking staff and provide your reservation number and vehicle plate. For an account or payment question, sign in and review the relevant reservation, notification, or payment record first.</p>
+  <p>When reporting a problem, include the lot name, date and time, vehicle plate, reservation number, and a short description of what happened. Never share your password.</p>
+</section>
+
+<div class="footer">ParkSmart · Find, reserve and manage parking in one place · Times: Asia/Dhaka · Currency: BDT<br>Customer guide prepared for the ParkSmart service experience. Policies may be updated as lot facilities and payment integrations change.</div>
+</main>
+</body>
+</html>

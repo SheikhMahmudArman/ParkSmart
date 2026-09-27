@@ -2,12 +2,14 @@
 
 use App\Http\Controllers\AuthController as Auth;
 use App\Http\Controllers\ParkSmartController as Api;
+use App\Http\Controllers\ChatController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('register', [Auth::class, 'register'])->middleware('throttle:10,1');
 Route::post('login', [Auth::class, 'login'])->middleware('throttle:10,1');
 Route::get('stats', [Api::class, 'stats']);
 Route::get('revenue-by-lot', [Api::class, 'revenueByLot']); // Public aggregate for existing landing page.
+Route::post('chat', [ChatController::class, 'ask'])->middleware('throttle:30,1');
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('user', [Auth::class, 'user']);
     Route::post('logout', [Auth::class, 'logout']);
