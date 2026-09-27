@@ -1,9 +1,10 @@
 <?php
 
+use App\Services\RagService;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 
 beforeEach(function () {
     Schema::create('parking_lots', function (Blueprint $table) {
@@ -28,6 +29,16 @@ beforeEach(function () {
         $table->time('start_time');
         $table->time('end_time');
         $table->string('status');
+    });
+
+    Schema::create('chat_knowledge_vectors', function (Blueprint $table) {
+        $table->id();
+        $table->string('source', 191);
+        $table->unsignedInteger('chunk_index');
+        $table->char('content_hash', 64)->unique();
+        $table->longText('content');
+        $table->json('embedding');
+        $table->timestamps();
     });
 
     DB::table('parking_lots')->insert([
@@ -65,7 +76,7 @@ beforeEach(function () {
 });
 
 test('chat uses local guidance when the LLM key is not configured', function () {
-    config(['services.openai.key' => null]);
+    config(['services.openrouter.key' => null]);
 
     $this->postJson('/api/chat', ['message' => 'How do I reserve a space?'])
         ->assertOk()
@@ -76,14 +87,116 @@ test('chat uses local guidance when the LLM key is not configured', function () 
         ->assertJsonPath('lots.0.total_spaces', 3);
 });
 
-test('chat preserves database availability when OpenAI credits are exhausted', function () {
-    config(['services.openai.key' => 'test-key']);
+test('chat retrieves relevant knowledge and sends it with live data to OpenRouter', function () {
+    config(['services.openrouter.key' => 'test-key']);
+    config(['services.embeddings.top_k' => 1]);
+    DB::table('chat_knowledge_vectors')->insert([
+        [
+            'source' => 'test-guide',
+            'chunk_index' => 0,
+            'content_hash' => hash('sha256', 'relevant'),
+            'content' => 'Each started hour is billed using the selected lot hourly rate.',
+            'embedding' => json_encode([1, 0]),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+        [
+            'source' => 'test-guide',
+            'chunk_index' => 1,
+            'content_hash' => hash('sha256', 'irrelevant'),
+            'content' => 'Unrelated account guidance.',
+            'embedding' => json_encode([0, 1]),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+    ]);
     Http::fake([
-        '*' => Http::response([
-            'error' => [
-                'message' => 'You have no credits remaining.',
-                'code' => 'insufficient_quota',
-            ],
+        '*/api/embed' => Http::response(['embeddings' => [[1, 0]]]),
+        '*/chat/completions' => Http::response([
+            'choices' => [['message' => ['content' => 'The selected lot rate applies.']]],
+        ]),
+    ]);
+
+    $this->postJson('/api/chat', ['message' => 'How is parking priced?'])
+        ->assertOk()
+        ->assertJsonPath('answer', 'The selected lot rate applies.');
+
+    Http::assertSent(function ($request) {
+        if (! str_ends_with($request->url(), '/chat/completions')) {
+            return false;
+        }
+
+        $body = json_decode($request->body(), true);
+        $context = $body['messages'][0]['content'] ?? '';
+
+        return str_contains($context, 'Each started hour is billed')
+            && str_contains($context, 'Central Garage (Dhaka): 1 free of 3 spaces')
+            && ! str_contains($context, 'Unrelated account guidance.');
+    });
+});
+
+test('chat falls back when the local embedding model is unavailable', function () {
+    config(['services.openrouter.key' => 'test-key']);
+    Http::fake(['*/api/embed' => Http::response([], 503)]);
+
+    $this->postJson('/api/chat', ['message' => 'How is parking priced?'])
+        ->assertOk()
+        ->assertJsonPath('fallback', true)
+        ->assertJsonPath('fallback_reason', 'embedding_unavailable');
+});
+
+test('chat falls back when the knowledge base has not been indexed', function () {
+    config(['services.openrouter.key' => 'test-key']);
+    Http::fake(['*/api/embed' => Http::response(['embeddings' => [[1, 0]]])]);
+
+    $this->postJson('/api/chat', ['message' => 'How is parking priced?'])
+        ->assertOk()
+        ->assertJsonPath('fallback', true)
+        ->assertJsonPath('fallback_reason', 'knowledge_not_indexed');
+});
+
+test('knowledge ingestion embeds chunks and replaces vectors for its source', function () {
+    config([
+        'services.embeddings.chunk_size' => 100,
+        'services.embeddings.chunk_overlap' => 20,
+    ]);
+    Http::fake([
+        '*/api/embed' => Http::response(['embeddings' => [[1, 0], [0, 1]]]),
+    ]);
+    DB::table('chat_knowledge_vectors')->insert([
+        'source' => 'test-guide',
+        'chunk_index' => 0,
+        'content_hash' => hash('sha256', 'old chunk'),
+        'content' => 'Old indexed content.',
+        'embedding' => json_encode([1, 1]),
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    $count = app(RagService::class)->ingest(
+        'test-guide',
+        str_repeat('a', 70) . "\n\n" . str_repeat('b', 70)
+    );
+
+    expect($count)->toBe(2)
+        ->and(DB::table('chat_knowledge_vectors')->where('source', 'test-guide')->count())->toBe(2);
+});
+
+test('chat preserves database availability when OpenRouter credits are exhausted', function () {
+    config(['services.openrouter.key' => 'test-key']);
+    DB::table('chat_knowledge_vectors')->insert([
+        'source' => 'test-guide',
+        'chunk_index' => 0,
+        'content_hash' => hash('sha256', 'parking availability'),
+        'content' => 'Search Parking shows live parking availability.',
+        'embedding' => json_encode([1, 0]),
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+    Http::fake([
+        '*/api/embed' => Http::response(['embeddings' => [[1, 0]]]),
+        '*/chat/completions' => Http::response([
+            'error' => ['message' => 'You have no credits remaining.', 'code' => 'insufficient_quota'],
         ], 429),
     ]);
 

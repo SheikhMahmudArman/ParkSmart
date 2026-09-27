@@ -86,13 +86,19 @@ function answerFor(question, lots = []) {
 
 function fallbackNotice(reason) {
   if (reason === 'no_api_credits') {
-    return 'OpenAI API credits are exhausted. Add API credits to enable AI-generated replies.';
+    return 'OpenRouter provider credits are exhausted. Check the provider account or choose another model.';
+  }
+  if (reason === 'knowledge_not_indexed') {
+    return 'The ParkSmart knowledge base has not been indexed yet. Please contact the administrator.';
+  }
+  if (reason === 'embedding_unavailable') {
+    return 'The local knowledge-search model is unavailable right now. Try again shortly.';
   }
   if (reason === 'rate_limited') {
     return 'The AI service is rate-limited right now. Try again shortly.';
   }
   if (reason === 'missing_api_key') {
-    return 'Configure OPENAI_API_KEY to enable AI-generated replies.';
+    return 'Configure OPENROUTER_API_KEY to enable AI-generated replies.';
   }
   if (reason === 'service_unavailable') {
     return 'The AI service could not be reached; showing local/database guidance.';

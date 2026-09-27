@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\RagService;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use RuntimeException;
 
 class ChatController extends Controller
 {
-    public function ask(Request $request)
+    public function ask(Request $request, RagService $rag)
     {
         $data = $request->validate([
             'message' => ['required', 'string', 'max:1000'],
@@ -28,49 +30,53 @@ class ChatController extends Controller
             )
             ->get();
 
-        $key = config('services.openai.key');
-        if (!$key) {
+        $key = config('services.openrouter.key');
+        if (! $key) {
             return $this->fallbackResponse($lots, 'missing_api_key');
         }
 
-        $context = <<<'TEXT'
-You are ParkSmart Assistant, a helpful customer-service chatbot for a parking company in Dhaka.
-Answer only using the ParkSmart information below. If the user asks for private account information, say that you cannot access personal bookings and direct them to the relevant page in the app. Never invent a parking lot, price, space count, policy, transaction, or reservation. Keep answers concise and practical.
+        try {
+            $retrievedChunks = $rag->retrieve($data['message']);
+        } catch (ConnectionException|RuntimeException $exception) {
+            Log::warning('Local embedding model unavailable for RAG retrieval.', [
+                'message' => $exception->getMessage(),
+            ]);
 
-Verified ParkSmart information:
-- Times are shown in Asia/Dhaka and prices are in BDT.
-- Drivers search parking lots, add a vehicle in Profile, and reserve a future date with a start and end time on the same date.
-- Each started hour is billed using the selected lot's hourly rate.
-- Search Parking shows each lot's location, current free spaces, total spaces, parking type, features, and hourly rate.
-- Entry must match the reservation, vehicle, lot, space, and booked time. Staff record entry and exit.
-- Leaving after the booked end time can increase the final amount and create an overstay fine.
-- Unpaid Pending or Confirmed bookings can be cancelled. Paid bookings require operator handling for refunds or adjustments.
-- The current application uses demo payments for coursework; no real card or bank payment is processed.
-- Drivers manage reservations, vehicles, notifications, payment history, and fines in their account.
-- For immediate lot issues, users should contact on-site staff. For emergencies, follow posted site instructions and contact local emergency services.
-
-Current public parking availability:
-TEXT;
-
-        foreach ($lots as $lot) {
-            $context .= sprintf(
-                "\n- %s (%s): %s free of %s spaces, %s, %s BDT/hour, features: %s",
-                $lot->name,
-                $lot->location,
-                (int) $lot->available_spaces,
-                (int) $lot->total_spaces,
-                $lot->type,
-                $lot->hourly_rate,
-                is_string($lot->features) ? $lot->features : json_encode($lot->features ?? [])
-            );
+            return $this->fallbackResponse($lots, 'embedding_unavailable');
         }
+
+        if ($retrievedChunks === []) {
+            return $this->fallbackResponse($lots, 'knowledge_not_indexed');
+        }
+
+        $availability = $lots->map(fn ($lot) => sprintf(
+            '%s (%s): %d free of %d spaces, %s, %s BDT/hour, features: %s',
+            $lot->name,
+            $lot->location,
+            (int) $lot->available_spaces,
+            (int) $lot->total_spaces,
+            $lot->type,
+            $lot->hourly_rate,
+            is_string($lot->features) ? $lot->features : json_encode($lot->features ?? [])
+        ))->implode("\n");
+
+        $context = "You are ParkSmart Assistant, a helpful customer-service chatbot for a parking company in Dhaka.\n"
+            . "Answer using only the retrieved reference material and live parking availability below. If the answer is not supported, say you do not have that information. Never invent a lot, price, space count, policy, transaction, or reservation. Do not disclose private account information; direct users to the relevant page in the app. Keep answers concise and practical. Times are Asia/Dhaka and prices are in BDT.\n\n"
+            . "Retrieved reference material:\n"
+            . implode("\n\n---\n\n", $retrievedChunks)
+            . "\n\nLive public parking availability (query-time database data):\n"
+            . ($availability !== '' ? $availability : 'No parking lots are currently listed.');
 
         try {
             $response = Http::withToken($key)
                 ->acceptJson()
                 ->timeout(30)
-                ->post(rtrim(config('services.openai.base_url'), '/') . '/chat/completions', [
-                    'model' => config('services.openai.model'),
+                ->withHeaders(array_filter([
+                    'HTTP-Referer' => config('services.openrouter.site_url'),
+                    'X-Title' => config('services.openrouter.site_name'),
+                ]))
+                ->post(rtrim(config('services.openrouter.base_url'), '/') . '/chat/completions', [
+                    'model' => config('services.openrouter.model'),
                     'temperature' => 0.2,
                     'messages' => [
                         ['role' => 'system', 'content' => $context],
@@ -88,7 +94,7 @@ TEXT;
                 ? 'no_api_credits'
                 : ($response->status() === 429 ? 'rate_limited' : 'provider_error');
 
-            Log::warning('OpenAI chat request failed; using local fallback.', [
+            Log::warning('OpenRouter chat request failed; using local fallback.', [
                 'status' => $response->status(),
                 'fallback_reason' => $fallbackReason,
             ]);

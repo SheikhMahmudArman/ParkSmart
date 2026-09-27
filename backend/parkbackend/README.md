@@ -57,3 +57,14 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## ParkSmart chatbot (OpenRouter + local RAG)
+
+The chat completion model is served by OpenRouter. Retrieval embeddings are generated locally by Ollama using `nomic-embed-text`; no embedding API key is required. The knowledge document is `resources/knowledge/parksmart.md`, and its chunk vectors are stored in the portable JSON-backed `chat_knowledge_vectors` table.
+
+1. Add `OPENROUTER_API_KEY` to this backend's `.env` (the existing `OPENAI_*` variables are no longer used). `OPENROUTER_MODEL` defaults to `openai/gpt-4o-mini`.
+2. Install and start Ollama, then pull the embedding model with `ollama pull nomic-embed-text`. Set `OLLAMA_BASE_URL` if Ollama is not listening at `http://127.0.0.1:11434`.
+3. Run `php artisan migrate` to create the vector table.
+4. Run `php artisan rag:ingest` to chunk the guide, create local embeddings, and index it. Re-run the command after editing the guide.
+
+At question time the app embeds the query locally, ranks stored chunks by cosine similarity, adds the top matches plus live parking availability to the prompt, and sends that prompt to OpenRouter. If Ollama or OpenRouter is unavailable, the chat returns the existing local/database fallback.
