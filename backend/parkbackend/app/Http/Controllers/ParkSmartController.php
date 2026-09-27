@@ -662,8 +662,8 @@ ORDER BY se.entry_time');
     {
 
         return DB::select('SELECT *
-FROM v_payment_details
-ORDER BY id DESC');
+        FROM v_payment_details
+        ORDER BY id DESC');
 
     }
 
@@ -673,9 +673,9 @@ ORDER BY id DESC');
         $this->owner((int) $id);
 
         return DB::select('SELECT *
-FROM v_payment_details
-WHERE user_id = ?
-ORDER BY id DESC', [$id]);
+        FROM v_payment_details
+        WHERE user_id = ?
+        ORDER BY id DESC', [$id]);
 
     }
 
@@ -685,15 +685,15 @@ ORDER BY id DESC', [$id]);
         $this->owner((int) $id);
 
         return DB::select('SELECT f.*
-FROM finds f
-LEFT
-JOIN reservations r ON r.id = f.reservation_id
-LEFT
-JOIN parking_sessions se ON se.id = f.session_id
-LEFT
-JOIN vehicles v ON v.id = se.vehicle_id
-WHERE COALESCE(r.user_id, v.user_id) = ?
-ORDER BY f.id DESC', [$id]);
+        FROM finds f
+        LEFT
+        JOIN reservations r ON r.id = f.reservation_id
+        LEFT
+        JOIN parking_sessions se ON se.id = f.session_id
+        LEFT
+        JOIN vehicles v ON v.id = se.vehicle_id
+        WHERE COALESCE(r.user_id, v.user_id) = ?
+        ORDER BY f.id DESC', [$id]);
 
     }
 
@@ -701,14 +701,14 @@ ORDER BY f.id DESC', [$id]);
     {
 
         $f = $this->row('SELECT COALESCE(r.user_id, v.user_id) AS user_id
-FROM finds f
-LEFT
-JOIN reservations r ON r.id = f.reservation_id
-LEFT
-JOIN parking_sessions se ON se.id = f.session_id
-LEFT
-JOIN vehicles v ON v.id = se.vehicle_id
-WHERE f.id = ?', [$id]);
+        FROM finds f
+        LEFT
+        JOIN reservations r ON r.id = f.reservation_id
+        LEFT
+        JOIN parking_sessions se ON se.id = f.session_id
+        LEFT
+        JOIN vehicles v ON v.id = se.vehicle_id
+        WHERE f.id = ?', [$id]);
 
         $this->owner((int) $f->user_id);
 
@@ -720,9 +720,9 @@ WHERE f.id = ?', [$id]);
     {
 
         return DB::select("SELECT *
-FROM finds
-WHERE status = 'Pending'
-    AND issue_date < DATE_SUB(NOW(), INTERVAL 7 DAY)");
+        FROM finds
+        WHERE status = 'Pending'
+        AND issue_date < DATE_SUB(NOW(), INTERVAL 7 DAY)");
 
     }
 
