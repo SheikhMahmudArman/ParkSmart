@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS reservation_audit (
 DROP VIEW IF EXISTS v_lot_availability;
 
 
-------------JJEMIIII----------------------------------------------------
 CREATE VIEW v_lot_availability AS
  SELECT 
   l.id, 
@@ -91,10 +90,7 @@ DETERMINISTIC NO SQL
 BEGIN
   RETURN ROUND(GREATEST(1,CEIL(TIMESTAMPDIFF(SECOND,p_start,p_end)/3600))*p_rate,2);
 END$$
--------------------------------------------------------------------------------------------------------
 
-
------------------------------------MAIMOONA-------------------------------------
 DROP TRIGGER IF EXISTS reservations_validate_insert$$
 
 CREATE TRIGGER reservations_validate_insert
@@ -120,10 +116,7 @@ BEGIN
         SET MESSAGE_TEXT = 'Vehicle does not belong to this driver';
     END IF;
 END$$
-----------------------------------------------------------------
 
-
----------------------------MAIMOONA----------------------------
 DROP TRIGGER IF EXISTS reservations_audit_insert$$
 
 CREATE TRIGGER reservations_audit_insert
@@ -141,10 +134,7 @@ BEGIN
         NEW.status
     );
 END$$
--------------------------------------------------------------------
 
-
-------------------------------------MAIMOONA------------------------------------
 DROP TRIGGER IF EXISTS reservations_audit_update$$
 
 CREATE TRIGGER reservations_audit_update
@@ -164,10 +154,7 @@ BEGIN
         );
     END IF;
 END$$
-------------------------------------------------------------------------
 
-
------------------------------MAIMOONA----------------------------
 DROP PROCEDURE IF EXISTS sp_reserve$$
 
 CREATE PROCEDURE sp_reserve(
@@ -309,9 +296,7 @@ BEGIN
         ON s.id = r.space_id
     WHERE r.id = v_id;
 END$$
------------------------------------------------------------------
 
------------------------------MAIMOONA----------------------------
 DROP PROCEDURE IF EXISTS sp_reservation_status$$
 
 CREATE PROCEDURE sp_reservation_status(
@@ -381,9 +366,7 @@ BEGIN
     FROM reservations
     WHERE id = p_id;
 END$$
------------------------------------------------------------------
 
-----------------JEMIIIIIIIIII-------------------------------------
 DROP PROCEDURE IF EXISTS sp_pay_reservation$$
 
 CREATE PROCEDURE sp_pay_reservation(IN p_id BIGINT,IN p_method VARCHAR(50))
@@ -433,10 +416,7 @@ BEGIN
     COMMIT;
     SELECT * FROM payments WHERE id=v_id;
 END$$
------------------------------------------------------------------
 
-
--------------------------------MAIMOONA----------------------------
 DROP PROCEDURE IF EXISTS sp_entry$$
 
 CREATE PROCEDURE sp_entry(
@@ -572,10 +552,7 @@ BEGIN
     FROM parking_sessions
     WHERE id = v_id;
 END$$
---------------------------------------------------------------
 
-
---------------------------------MAIMOONA------------------------
 DROP PROCEDURE IF EXISTS sp_exit$$
 
 CREATE PROCEDURE sp_exit(
@@ -631,7 +608,7 @@ BEGIN
     END IF;
 
 
-    -----------------------JEMI (CLACULTE COST)
+
 
     SET v_minutes =
         GREATEST(
@@ -663,7 +640,7 @@ BEGIN
     WHERE id = p_session;
 
 
-    ------------------------JEMI(FREE SPACE)-------
+
 
     UPDATE parking_spaces
     SET
@@ -681,7 +658,6 @@ BEGIN
     WHERE id = v_res;
 
 
-    ------------------------JEMI(FINE)-------
 
     IF v_end < NOW() THEN
 
@@ -717,10 +693,7 @@ BEGIN
         v_cost AS total_cost,
         v_minutes AS duration_minutes;
 END$$
--------------------------------------------------------------------
 
-
------------------------JEMI (PAY FINE)-----------------------------
 DROP PROCEDURE IF EXISTS sp_pay_fine$$
 CREATE PROCEDURE sp_pay_fine(IN p_id BIGINT,IN p_method VARCHAR(50))
 BEGIN
@@ -794,10 +767,7 @@ BEGIN
  COMMIT;
  SELECT * FROM parking_lots WHERE id=v_id;
 END$$
--------------------------------------------------------------------------------------------
 
-
---------------------------------MAIMOONA--------------------------------
 DROP PROCEDURE IF EXISTS sp_expire_reservations$$
 
 CREATE PROCEDURE sp_expire_reservations()

@@ -221,19 +221,19 @@ WHERE id = ?', [$id]));
         Sql::locked(function () use ($id) {
 
             $this->row('SELECT id
-FROM users
-WHERE id = ?', [$id]);
+         FROM users
+        WHERE id = ?', [$id]);
 
             abort_if(DB::selectOne('SELECT id
-FROM vehicles
-WHERE user_id = ? LIMIT 1', [$id]), 409, 'Remove unused vehicles first; accounts with parking history are retained');
+         FROM vehicles
+      WHERE user_id = ? LIMIT 1', [$id]), 409, 'Remove unused vehicles first; accounts with parking history are retained');
 
             DB::delete('DELETE FROM personal_access_tokens
-WHERE tokenable_id = ?
-    AND tokenable_type = ?', [$id, User::class]);
+     WHERE tokenable_id = ?
+        AND tokenable_type = ?', [$id, User::class]);
 
             DB::delete('DELETE FROM users
-WHERE id = ?', [$id]);
+     WHERE id = ?', [$id]);
 
         });
 

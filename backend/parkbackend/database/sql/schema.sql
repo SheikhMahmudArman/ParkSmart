@@ -67,7 +67,7 @@ CREATE TABLE `vehicles` (
   CONSTRAINT `vehicles_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
----------------------------------MAIMOONA---------------------------------
+
 CREATE TABLE `reservations` (
     `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     `user_id` bigint(20) unsigned NOT NULL,
@@ -104,9 +104,7 @@ CREATE TABLE `reservations` (
 ) ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_unicode_ci;
-------------------------------------------------------------------
 
----------------------------------MAIMOONA---------------------------------
 CREATE TABLE `parking_sessions` (
     `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     `reservation_id` bigint(20) unsigned DEFAULT NULL,
@@ -204,7 +202,6 @@ CREATE TABLE `feedbacks` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
------------------------------MAIMOONA-----------------------------
 CREATE TABLE `employees` (
     `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     `name` varchar(100) NOT NULL,
@@ -222,7 +219,7 @@ CREATE TABLE `employees` (
 ) ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_unicode_ci;
-----------------------------------------------------------
+
 
 CREATE TABLE `personal_access_tokens` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,

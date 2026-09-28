@@ -6,10 +6,7 @@ FROM reservations
 WHERE end_time <= start_time
    OR total_amount IS NULL
    OR total_amount < 0;
-------------------------------------------------------
 
-
-------------------MAIMOONA------------------
 SELECT s.id, s.status, COUNT(se.id) AS active_sessions
 FROM parking_spaces s
 LEFT JOIN parking_sessions se
@@ -19,10 +16,7 @@ GROUP BY s.id, s.status
 HAVING (s.status = 'Occupied' AND active_sessions <> 1)
     OR (s.status <> 'Occupied' AND active_sessions > 0)
     OR s.status = 'Reserved';
-------------------------------------------------------
 
-
-------------------MAIMOONA------------------
 SELECT r1.id AS first_booking,
        r2.id AS overlapping_booking,
        r1.space_id
@@ -35,10 +29,7 @@ JOIN reservations r2
     AND r1.end_time > r2.start_time
 WHERE r1.status IN ('Pending', 'Confirmed', 'Active')
   AND r2.status IN ('Pending', 'Confirmed', 'Active');
------------------------------------------------------
 
-
----------------------MAIMOONA-----------------------
 SELECT r.id,
        r.user_id,
        v.user_id AS vehicle_owner
@@ -46,9 +37,7 @@ FROM reservations r
 JOIN vehicles v
     ON v.id = r.vehicle_id
 WHERE r.user_id <> v.user_id;
---------------------------------------------------------------
 
-------------jemi------------------
 SELECT 
     reservation_id,
     COUNT(*) AS payment_count
